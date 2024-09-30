@@ -101,6 +101,18 @@ git clone <repository-url>
 cd next-type && pnpm install && npm install
 ```
 
+### Excluding Expo App from Vercel Deployment
+
+To keep the Expo app (`type-app`) inside the project folder but exclude it from being deployed to Vercel, I used a `.vercelignore` file. This allows the Expo app to be committed to the repository while ensuring Vercel doesn't attempt to deploy it.
+
+Steps:
+1. Created a `.vercelignore` file in the root of the project.
+2. Added the path to the Expo app folder to the `.vercelignore` file:
+
+```bash
+  /type-app
+```
+
 ### Future Plans
 -Migrate the Expo app to pnpm.
 -Add more features for comprehensive farm management and tracking.
