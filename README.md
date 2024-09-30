@@ -27,8 +27,8 @@ To learn more about Next.js, take a look at the following resources:
 
 - [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
 
-
-=======
+```
 i hate management apps and these app intergrates them which is sad. but it will help anyways thats why we gotta do it.
 lets start with the farm expenses first, then intergrates other parts
+```
 >>>>>>> e44c98f1838f640774f4e464afaf0e2c931837a1
