@@ -115,6 +115,26 @@ cd next-type && pnpm install && npm install
         └── route.ts
 
 ```
+expo app structure
+```bash
+ /app
+  /components
+    /LoginForm.tsx
+    /ActivityList.tsx
+    /UserList.tsx
+    /Modal.tsx
+  /screens
+    /LoginScreen.tsx
+    /DashboardScreen.tsx
+    /ActivitiesScreen.tsx
+    /UsersScreen.tsx
+  /hooks
+    /useAuth.ts
+    /useActivities.ts
+    /useUsers.ts
+
+
+```
 
 ### Excluding Expo App from Vercel Deployment
 
