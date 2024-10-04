@@ -101,6 +101,21 @@ git clone <repository-url>
 cd next-type && pnpm install && npm install
 ```
 
+### * .Directory Structure
+```bash
+  app/
+└── api/
+    ├── users/
+    │   └── route.ts
+    ├── persons/
+    │   └── route.ts
+    ├── activities/
+    │   └── route.ts
+    └── activity-persons/
+        └── route.ts
+
+```
+
 ### Excluding Expo App from Vercel Deployment
 
 To keep the Expo app (`type-app`) inside the project folder but exclude it from being deployed to Vercel, I used a `.vercelignore` file. This allows the Expo app to be committed to the repository while ensuring Vercel doesn't attempt to deploy it.
