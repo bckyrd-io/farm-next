@@ -117,23 +117,24 @@ cd next-type && pnpm install && npm install
 ```
 expo app structure
 ```bash
- /app
-  /components
-    /LoginForm.tsx
-    /ActivityList.tsx
-    /UserList.tsx
-    /Modal.tsx
-  /screens
-    /LoginScreen.tsx
-    /DashboardScreen.tsx
-    /ActivitiesScreen.tsx
-    /UsersScreen.tsx
-  /hooks
-    /useAuth.ts
-    /useActivities.ts
-    /useUsers.ts
-
-
+root
+│
+├── app                     # Main application folder
+│   ├── screens              # All screen components
+│   │   ├── HomeScreen.tsx   # Home screen after login
+│   │   ├── LoginScreen.tsx  # Login screen for users
+│   │   ├── RevenueScreen.tsx# Revenue form and graph
+│   │   ├── ExpenseScreen.tsx# Expense form and graph
+│   ├── components           # Reusable components (e.g., form inputs, buttons)
+│   │   ├── FormInput.tsx    # Input component for forms
+│   ├── navigation           # All navigation logic
+│   │   └── index.tsx        # Main navigation configuration
+│   ├── App.tsx              # Entry point for the app
+│
+├── assets                   # Any assets (images, fonts)
+│
+├── tsconfig.json            # TypeScript config
+└── package.json             # Package dependencies
 ```
 
 ### Excluding Expo App from Vercel Deployment
