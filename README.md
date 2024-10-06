@@ -103,17 +103,14 @@ cd next-type && pnpm install && npm install
 
 ### * .Directory Structure
 ```bash
-  app/
+ app/
 └── api/
-    ├── users/
-    │   └── route.ts
     ├── persons/
     │   └── route.ts
     ├── activities/
     │   └── route.ts
     └── activity-persons/
         └── route.ts
-
 ```
 expo app structure
 ```bash
