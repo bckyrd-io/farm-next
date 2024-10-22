@@ -1,15 +1,19 @@
+
 import type { Metadata } from "next";
 import localFont from "next/font/local";
-import "./globals.css";
+// import "../globals.css";
+
+import { SidebarProvider, SidebarTrigger } from "../../components/ui/sidebar";
+import { AppSidebar } from "../../components/app-sidebar";
 
 
 const geistSans = localFont({
-	src: "./fonts/GeistVF.woff",
+	src: "../fonts/GeistVF.woff",
 	variable: "--font-geist-sans",
 	weight: "100 900",
 });
 const geistMono = localFont({
-	src: "./fonts/GeistMonoVF.woff",
+	src: "../fonts/GeistMonoVF.woff",
 	variable: "--font-geist-mono",
 	weight: "100 900",
 });
@@ -19,6 +23,7 @@ export const metadata: Metadata = {
 	description: "CashFlow Quadrant Inspired: Farm Revenue And Expenses",
 };
 
+
 export default function RootLayout({
 	children,
 }: Readonly<{
@@ -27,13 +32,15 @@ export default function RootLayout({
 	return (
 		<html lang="en">
 			<body
-				className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-100`}
+				className={`${geistSans.variable} ${geistMono.variable} antialiased`}
 			>
-
-				<main className="w-full flex justify-center items-center min-h-screen  ">
-					{children}
-				</main>
-
+				<SidebarProvider>
+					<AppSidebar />
+					<main className="w-full ">
+						<SidebarTrigger />
+						{children}
+					</main>
+				</SidebarProvider>
 			</body>
 		</html>
 	);

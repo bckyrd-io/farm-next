@@ -45,7 +45,7 @@ const LoginPage = () => {
 	};
 
 	return (
-		<div className="flex justify-center items-center min-h-screen ">
+		
 			<Card className="shadow-none w-1/3">
 				<Form {...form}>
 					<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 p-6">
@@ -110,7 +110,7 @@ const LoginPage = () => {
 				</Form>
 			</Card>
 
-		</div>
+		
 	);
 };
 

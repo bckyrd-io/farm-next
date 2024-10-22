@@ -75,7 +75,7 @@ const Dashboard = () => {
     ];
 
     // Filter activities based on selected filter
-    const filteredActivities = sampleData.activities.filter(activity => 
+    const filteredActivities = sampleData.activities.filter(activity =>
         filter === 'All' || activity.type === filter
     );
 
@@ -135,19 +135,27 @@ const Dashboard = () => {
             </div>
 
             {/* Activities Overview */}
+
             <h2 className="text-2xl font-bold mt-6">Activities Overview</h2>
+            <Button className="mt-4" onClick={() => console.log('Add Activity')}>
+                Add
+            </Button>
             <select
                 value={filter}
                 onChange={(e) => setFilter(e.target.value)}
-                className="mb-4 p-2 border rounded"
+                className="mb-4 p-2 border rounded mt-5"
             >
                 <option value="All">All</option>
                 <option value="Revenue">Revenue</option>
                 <option value="Expense">Expense</option>
                 <option value="Neutral">Neutral</option>
+
             </select>
 
+
+
             <Card className="w-full">
+
                 <Table className="w-full">
                     <TableHeader>
                         <TableRow>
@@ -172,9 +180,7 @@ const Dashboard = () => {
                 </Table>
             </Card>
 
-            <Button className="mt-4" onClick={() => console.log('Add Activity')}>
-                Add 
-            </Button>
+
         </div>
     );
 };
