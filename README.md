@@ -60,6 +60,8 @@ npm install
 Running the Next.js API
 ```bash
 Copy code
+pnpm dlx vercel env pull .env.development.local
+or
 pnpm dlx vercel link
 ```
 #### 4. Running the Application
