@@ -56,7 +56,13 @@ cd expo-app
 npm install
 ```
 
-#### 3. Running the Application
+#### 3. Setting Vercel database
+Running the Next.js API
+```bash
+Copy code
+pnpm dlx vercel link
+```
+#### 4. Running the Application
 Running the Next.js API
 ```bash
 Copy code
