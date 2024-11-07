@@ -56,7 +56,7 @@ const UserPage = () => {
     };
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen p-6">
+        <div className="flex flex-col items-center justify-center min-h-screen p-4">
             <h1 className="text-2xl font-bold mb-6">User Management</h1>
 
             {/* Add User Button */}
@@ -65,7 +65,7 @@ const UserPage = () => {
             </Link>
             
             {/* Users List Table */}
-            <Card className="w-full max-w-4xl p-4 shadow-md">
+            <Card className="w-full p-4 shadow-sm">
                 <Table className="w-full">
                     <TableHeader>
                         <TableRow>

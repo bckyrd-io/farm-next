@@ -7,6 +7,7 @@ export const usersTable = pgTable('users', {
   passwordHash: text('password_hash').notNull(),
   email: text('email').notNull().unique(),
   branchId: integer('branch_id').notNull().references(() => branchesTable.id),
+  role: text('role').notNull().default('User'), // Add role column with a default role
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow().$onUpdateFn(() => new Date()),
 });

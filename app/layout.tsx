@@ -1,6 +1,10 @@
+
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+
+import { SidebarProvider, SidebarTrigger } from "../components/ui/sidebar";
+import { AppSidebar } from "../components/app-sidebar";
 
 
 const geistSans = localFont({
@@ -16,8 +20,9 @@ const geistMono = localFont({
 
 export const metadata: Metadata = {
 	title: "Next Type App",
-	description: "CashFlow Quadrant Inspired: Farm Revenue And Expenses",
+	description: "Farm Revenue And Expenses",
 };
+
 
 export default function RootLayout({
 	children,
@@ -27,13 +32,15 @@ export default function RootLayout({
 	return (
 		<html lang="en">
 			<body
-				className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-100`}
+				className={`${geistSans.variable} ${geistMono.variable} antialiased`}
 			>
-
-				<main className="w-full flex justify-center items-center min-h-screen  ">
-					{children}
-				</main>
-
+				<SidebarProvider>
+					<AppSidebar />
+					<main className="w-full ">
+						<SidebarTrigger />
+						{children}
+					</main>
+				</SidebarProvider>
 			</body>
 		</html>
 	);

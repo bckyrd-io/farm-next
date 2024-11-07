@@ -87,7 +87,7 @@ const Dashboard = () => {
     });
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen  p-4">
+        <div className="flex flex-col items-center justify-center min-h-screen p-4">
             <h1 className="text-2xl font-bold mb-6">Dashboard</h1>
 
             {/* Metrics Section */}
@@ -106,15 +106,6 @@ const Dashboard = () => {
                 </Card>
             </div>
 
-            {/* Notifications Section */}
-            <h2 className="text-xl font-bold mt-6">Notifications</h2>
-            <div className="flex flex-col mt-4">
-                {sampleData.notifications.map((notification, index) => (
-                    <Badge key={index} className="mb-2">
-                        {notification}
-                    </Badge>
-                ))}
-            </div>
 
             {/* Bar Chart Section */}
             <div className="mt-6 w-full">
@@ -133,6 +124,7 @@ const Dashboard = () => {
                     </BarChart>
                 </ChartContainer>
             </div>
+
 
             {/* Activities Overview */}
 
@@ -180,6 +172,15 @@ const Dashboard = () => {
                 </Table>
             </Card>
 
+            {/* Notifications Section */}
+            <h2 className="text-xl font-bold mt-6">Notifications</h2>
+            <div className="flex flex-col mt-4">
+                {sampleData.notifications.map((notification, index) => (
+                    <Badge key={index} className="mb-2">
+                        {notification}
+                    </Badge>
+                ))}
+            </div>
 
         </div>
     );
