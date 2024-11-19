@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '../../../src/db';
-import { personsTable } from '../../../src/db/schema';
+import { db } from '../../../drizzle/db';
+import { personsTable } from '../../../drizzle/db/schema';
 import { eq } from 'drizzle-orm';
 
 // GET: Fetch all persons

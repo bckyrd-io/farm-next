@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '../../../src/db';
-import { activityPersonsTable } from '../../../src/db/schema';
+import { db } from '../../../drizzle/db';
+import { activityPersonsTable } from '../../../drizzle/db/schema';
 import { and, eq } from 'drizzle-orm';
 
 // GET: Fetch all activity-person relations

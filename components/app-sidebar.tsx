@@ -18,8 +18,8 @@ const items = [
     icon: Home,
   },
   {
-    title: "Inventory",
-    url: "inventory",
+    title: "Resource",
+    url: "resource",
     icon: Inbox,
   },
   {
@@ -33,7 +33,7 @@ const items = [
     icon: Settings,
   },
   {
-    title: "Users",
+    title: "User",
     url: "user",
     icon: Users,
   },

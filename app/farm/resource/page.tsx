@@ -50,7 +50,7 @@ const chartConfig = {
 	},
 } satisfies ChartConfig;
 
-const Branch = () => {
+const Inventory = () => {
 	const [filter, setFilter] = useState('All');
 
 	// Define columns for TanStack Table
@@ -88,29 +88,39 @@ const Branch = () => {
 
 	return (
 		<div className="flex flex-col items-center justify-center min-h-screen p-4">
-			<h1 className="text-2xl font-bold mb-6">Branch</h1>
-
-			{/* Metrics Section */}
-			<div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
-				<Card className="p-4 shadow-none">
-					<h2 className="text-lg font-semibold">Total Revenue</h2>
-					<p className="text-xl">${sampleData.metrics.totalRevenue}</p>
-				</Card>
-				<Card className="p-4 shadow-none">
-					<h2 className="text-lg font-semibold">Total Expenses</h2>
-					<p className="text-xl">${sampleData.metrics.totalExpenses}</p>
-				</Card>
-				<Card className="p-4 shadow-none">
-					<h2 className="text-lg font-semibold">Net Profit</h2>
-					<p className="text-xl">${sampleData.metrics.netProfit}</p>
-				</Card>
-			</div>
+			<h1 className="text-2xl font-bold mb-6">Inventory</h1>
 
 			<Button className="mt-4" onClick={() => console.log('Add Activity')}>
 				Add
 			</Button>
+
+			<Card className="w-full mt-5">
+				<Table className="w-full">
+					<TableHeader>
+						<TableRow>
+							{table.getFlatHeaders().map(header => (
+								<TableHead key={header.id}>
+									{flexRender(header.column.columnDef.header, header.getContext())}
+								</TableHead>
+							))}
+						</TableRow>
+					</TableHeader>
+					<TableBody>
+						{table.getRowModel().rows.map(row => (
+							<TableRow key={row.id}>
+								{row.getVisibleCells().map(cell => (
+									<TableCell key={cell.id}>
+										{flexRender(cell.column.columnDef.cell, cell.getContext())}
+									</TableCell>
+								))}
+							</TableRow>
+						))}
+					</TableBody>
+				</Table>
+			</Card>
+
 		</div>
 	);
 };
 
-export default Branch;
+export default Inventory;

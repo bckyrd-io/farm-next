@@ -14,7 +14,7 @@ const usersData = [
         id: 1,
         name: "John Doe",
         email: "john.doe@example.com",
-        profilePicture: "/profile-picture-1.jpg",
+        profilePicture: "/avatar.png",
         role: "Admin",
         joinedDate: "2023-06-15",
     },
@@ -22,7 +22,7 @@ const usersData = [
         id: 2,
         name: "Jane Smith",
         email: "jane.smith@example.com",
-        profilePicture: "/profile-picture-2.jpg",
+        profilePicture: "/avatar.png",
         role: "User",
         joinedDate: "2024-01-10",
     },
@@ -30,7 +30,7 @@ const usersData = [
         id: 3,
         name: "Bob Johnson",
         email: "bob.johnson@example.com",
-        profilePicture: "/profile-picture-3.jpg",
+        profilePicture: "/avatar.png",
         role: "Moderator",
         joinedDate: "2023-08-22",
     },
@@ -63,7 +63,7 @@ const UserPage = () => {
             <Link href="/user-add">
                 <Button className="mb-6" variant="default">Add New User</Button>
             </Link>
-            
+
             {/* Users List Table */}
             <Card className="w-full p-4 shadow-sm">
                 <Table className="w-full">
