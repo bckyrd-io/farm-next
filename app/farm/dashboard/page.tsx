@@ -1,189 +1,134 @@
 "use client";
 
-import { useState } from 'react';
 import {
-    useReactTable,
-    getCoreRowModel,
-    ColumnDef,
-    flexRender,
-} from '@tanstack/react-table';
-import { Card } from '../../../components/ui/card';
-import { Button } from '../../../components/ui/button';
-import { Badge } from '../../../components/ui/badge';
-import { Table, TableHead, TableRow, TableBody, TableCell, TableHeader } from '../../../components/ui/table';
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
-import { ChartConfig, ChartContainer } from "../../../components/ui/chart";
+  Bar,
+  BarChart,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
+import { Card } from "../../../components/ui/card";
+import {
+  Table,
+  TableHeader,
+  TableRow,
+  TableHead,
+  TableBody,
+  TableCell,
+} from "../../../components/ui/table";
 
 // Sample data for the dashboard
 const sampleData = {
-    activities: [
-        { id: 1, type: 'Revenue', amount: 1500, date: '2024-10-18' },
-        { id: 2, type: 'Expense', amount: 300, date: '2024-10-15' },
-        { id: 3, type: 'Neutral', amount: 200, date: '2024-10-12' },
-    ],
-    metrics: {
-        totalRevenue: 1500,
-        totalExpenses: 300,
-        netProfit: 1200,
-    },
-    notifications: [
-        "New activity added.",
-        "You have unscheduled tasks.",
-        "Revenue has increased by 20% this month.",
-    ],
+  activities: [
+    { id: 1, type: "Revenue", amount: 1500, date: "2024-10-18" },
+    { id: 2, type: "Expense", amount: 300, date: "2024-10-15" },
+    { id: 3, type: "Neutral", amount: 200, date: "2024-10-12" },
+  ],
+  metrics: {
+    totalRevenue: 1500,
+    totalExpenses: 300,
+    netProfit: 1200,
+  },
+  notifications: [
+    "New activity added.",
+    "You have unscheduled tasks.",
+    "Revenue has increased by 20% this month.",
+  ],
 };
 
 // Bar chart data
 const chartData = [
-    { name: "Total Revenue", revenue: sampleData.metrics.totalRevenue },
-    { name: "Total Expenses", expenses: sampleData.metrics.totalExpenses },
+  { name: "Total Revenue", revenue: sampleData.metrics.totalRevenue },
+  { name: "Total Expenses", expenses: sampleData.metrics.totalExpenses },
 ];
 
-const chartConfig = {
-    revenue: {
-        label: "Revenue",
-        color: "#2563eb",
-    },
-    expenses: {
-        label: "Expenses",
-        color: "#dc2626",
-    },
-} satisfies ChartConfig;
-
 const Dashboard = () => {
-    const [filter, setFilter] = useState('All');
+  return (
+    <div className="flex flex-col items-center justify-center min-h-screen p-4">
+      <h1 className="text-2xl font-bold mb-6">Dashboard</h1>
 
-    // Define columns for TanStack Table
-    const columns: ColumnDef<typeof sampleData.activities[0]>[] = [
-        {
-            accessorKey: 'id',
-            header: 'ID',
-        },
-        {
-            accessorKey: 'type',
-            header: 'Type',
-        },
-        {
-            accessorKey: 'amount',
-            header: 'Amount',
-            cell: info => `$${info.getValue()}`,
-        },
-        {
-            accessorKey: 'date',
-            header: 'Date',
-        },
-    ];
+      {/* Metrics Section */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
+        <Card className="p-4 shadow-none">
+          <h2 className="text-lg font-semibold">Total Revenue</h2>
+          <p className="text-xl">${sampleData.metrics.totalRevenue}</p>
+        </Card>
+        <Card className="p-4 shadow-none">
+          <h2 className="text-lg font-semibold">Total Expenses</h2>
+          <p className="text-xl">${sampleData.metrics.totalExpenses}</p>
+        </Card>
+        <Card className="p-4 shadow-none">
+          <h2 className="text-lg font-semibold">Net Profit</h2>
+          <p className="text-xl">${sampleData.metrics.netProfit}</p>
+        </Card>
+      </div>
 
-    // Filter activities based on selected filter
-    const filteredActivities = sampleData.activities.filter(activity =>
-        filter === 'All' || activity.type === filter
-    );
+      {/* Bar Chart Section */}
+      <div className="mt-10 w-full">
+        <Card className="p-4 shadow-none">
+          <h2 className="text-lg font-semibold mb-4">Performance Overview</h2>
+          <div className="w-full ">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                width={500}
+                height={300}
+                data={chartData}
+                // margin={{ top: 20, right: 30, left: 0, bottom: 20 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey="revenue" fill="#33b76d" radius={4} />
+                <Bar dataKey="expenses" fill="#dc2626" radius={4} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </Card>
+      </div>
 
-    // Create the table instance
-    const table = useReactTable({
-        data: filteredActivities,
-        columns,
-        getCoreRowModel: getCoreRowModel(),
-    });
+      {/* Activities Overview */}
+      <Card className="w-full mt-10 shadow-none">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>ID</TableHead>
+              <TableHead>Type</TableHead>
+              <TableHead>Amount</TableHead>
+              <TableHead>Date</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {sampleData.activities.map((activity) => (
+              <TableRow key={activity.id}>
+                <TableCell>{activity.id}</TableCell>
+                <TableCell>{activity.type}</TableCell>
+                <TableCell>${activity.amount}</TableCell>
+                <TableCell>{activity.date}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </Card>
 
-    return (
-        <div className="flex flex-col items-center justify-center min-h-screen p-4">
-            <h1 className="text-2xl font-bold mb-6">Dashboard</h1>
-
-            {/* Metrics Section */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
-                <Card className="p-4 shadow-none">
-                    <h2 className="text-lg font-semibold">Total Revenue</h2>
-                    <p className="text-xl">${sampleData.metrics.totalRevenue}</p>
-                </Card>
-                <Card className="p-4 shadow-none">
-                    <h2 className="text-lg font-semibold">Total Expenses</h2>
-                    <p className="text-xl">${sampleData.metrics.totalExpenses}</p>
-                </Card>
-                <Card className="p-4 shadow-none">
-                    <h2 className="text-lg font-semibold">Net Profit</h2>
-                    <p className="text-xl">${sampleData.metrics.netProfit}</p>
-                </Card>
-            </div>
-
-
-            {/* Bar Chart Section */}
-            <div className="mt-6 w-full">
-                <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
-                    <BarChart accessibilityLayer data={chartData}>
-                        <CartesianGrid vertical={false} />
-                        <XAxis
-                            dataKey="name"
-                            tickLine={false}
-                            tickMargin={10}
-                            axisLine={false}
-                        />
-                        <YAxis />
-                        <Bar dataKey="revenue" fill="var(--color-revenue)" radius={4} />
-                        <Bar dataKey="expenses" fill="var(--color-expenses)" radius={4} />
-                    </BarChart>
-                </ChartContainer>
-            </div>
-
-
-            {/* Activities Overview */}
-
-            <h2 className="text-2xl font-bold mt-6">Activities Overview</h2>
-            <Button className="mt-4" onClick={() => console.log('Add Activity')}>
-                Add
-            </Button>
-            <select
-                value={filter}
-                onChange={(e) => setFilter(e.target.value)}
-                className="mb-4 p-2 border rounded mt-5"
-            >
-                <option value="All">All</option>
-                <option value="Revenue">Revenue</option>
-                <option value="Expense">Expense</option>
-                <option value="Neutral">Neutral</option>
-
-            </select>
-
-
-
-            <Card className="w-full">
-
-                <Table className="w-full">
-                    <TableHeader>
-                        <TableRow>
-                            {table.getFlatHeaders().map(header => (
-                                <TableHead key={header.id}>
-                                    {flexRender(header.column.columnDef.header, header.getContext())}
-                                </TableHead>
-                            ))}
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {table.getRowModel().rows.map(row => (
-                            <TableRow key={row.id}>
-                                {row.getVisibleCells().map(cell => (
-                                    <TableCell key={cell.id}>
-                                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                    </TableCell>
-                                ))}
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </Card>
-
-            {/* Notifications Section */}
-            <h2 className="text-xl font-bold mt-6">Notifications</h2>
-            <div className="flex flex-col mt-4">
-                {sampleData.notifications.map((notification, index) => (
-                    <Badge key={index} className="mb-2">
-                        {notification}
-                    </Badge>
-                ))}
-            </div>
-
-        </div>
-    );
+      {/* Notifications Section */}
+      <div className="flex flex-col mt-10 w-full">
+        {sampleData.notifications.map((notification, index) => (
+          <div
+            key={index}
+            className="bg-green-100 text-green-800 p-2 rounded mb-2"
+            style={{ color: "hsl(146.4, 56.4%, 45.9%)" }}
+          >
+            {notification}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 };
 
 export default Dashboard;

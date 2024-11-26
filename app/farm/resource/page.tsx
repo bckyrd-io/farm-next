@@ -94,7 +94,7 @@ const Inventory = () => {
 				Add
 			</Button>
 
-			<Card className="w-full mt-5">
+			<Card className="w-full mt-5 shadow-none">
 				<Table className="w-full">
 					<TableHeader>
 						<TableRow>
