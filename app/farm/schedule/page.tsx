@@ -16,7 +16,6 @@ const SchedulePage = () => {
         <div className="flex flex-col items-center justify-center min-h-screen p-4">
             <h1 className="text-2xl font-bold mb-6 text-center">Scheduled Activities</h1>
             <Card className="w-full max-w-3xl p-4 shadow-none">
-
                 <FullCalendar
                     plugins={[dayGridPlugin, interactionPlugin]}
                     initialView="dayGridMonth"

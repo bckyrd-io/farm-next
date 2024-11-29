@@ -1,8 +1,8 @@
 // /api/branches.ts
 
 import { db } from '../../../drizzle/db';
-import { branchesTable } from '../../../drizzle/db/schema';
-import { eq } from 'drizzle-orm';
+import { branchesTable, usersTable } from '../../../drizzle/db/schema';
+import { eq, sql } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 
 // Create Branch
@@ -24,11 +24,25 @@ export async function POST(req: Request) {
     }
 }
 
-// Get All Branches
+
+
+
+// Get All Branches with Additional Metrics (like user count)
 export async function GET() {
     try {
-        const branches = await db.select().from(branchesTable);
-        return NextResponse.json({ success: true, branches });
+        // Query to fetch branches and user count for each branch
+        const branchesWithUserCount = await db
+            .select({
+                id: branchesTable.id,
+                name: branchesTable.name,
+                location: branchesTable.location,
+                userCount: sql<number>`count(${usersTable.id})`.as('userCount') // Counting users for each branch
+            })
+            .from(branchesTable)
+            .leftJoin(usersTable, eq(usersTable.branchId, branchesTable.id)) // Left join ensures all branches are included
+            .groupBy(branchesTable.id); // Group by branch ID to get one row per branch
+
+        return NextResponse.json({ success: true, branches: branchesWithUserCount });
     } catch (error) {
         return NextResponse.json({ success: false, message: 'Server error' }, { status: 500 });
     }

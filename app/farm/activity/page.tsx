@@ -11,10 +11,10 @@ import {
     FormItem,
     FormLabel,
     FormMessage,
-} from "../../../../components/ui/form";
-import { Input } from "../../../../components/ui/input";
-import { Button } from "../../../../components/ui/button";
-import { Card } from "../../../../components/ui/card";
+} from "../../../components/ui/form";
+import { Input } from "../../../components/ui/input";
+import { Button } from "../../../components/ui/button";
+import { Card } from "../../../components/ui/card";
 
 const activitySchema = z.object({
     description: z.string().min(1, {
@@ -23,9 +23,12 @@ const activitySchema = z.object({
     activityType: z.enum(["Revenue", "Expense", "Neutral"], {
         errorMap: () => ({ message: "Select a valid activity type." }),
     }),
-    amount: z.number().min(0, {
-        message: "Amount must be a positive number.",
-    }),
+    amount: z
+        .union([z.string(), z.number()])
+        .transform((val) => Number(val))
+        .refine((val) => !isNaN(val) && val > 0, {
+            message: "Amount must be a positive number.",
+        }),
     activityDate: z.string().min(1, {
         message: "Activity date is required.",
     }),
@@ -39,13 +42,34 @@ const AddActivity = () => {
     });
 
     const onSubmit = (data: ActivityFormValues) => {
-        console.log("Activity added:", data);
-        // Handle the form submission (e.g., send data to an API)
+        const parsedData = {
+            ...data,
+            amount: Number(data.amount), // Convert amount to a number
+        };
+
+        console.log("Parsed data:", parsedData);
+
+        fetch("/api/activities", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(parsedData),
+        })
+            .then((response) => response.json())
+            .then((result) => {
+                if (result.success) {
+                    console.log("Activity created successfully!", result.activity);
+                } else {
+                    console.error("Error creating activity:", result.message);
+                }
+            })
+            .catch((error) => {
+                console.error("Network or server error:", error);
+            });
     };
 
     return (
-        <div className="flex justify-center items-center min-h-screen">
-
+        <div className="flex flex-col justify-center items-center min-h-screen">
+            <h1 className="text-2xl font-bold mb-6 text-center">Create An Activity</h1>
             <Card className="shadow-none w-1/3">
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 p-6">
@@ -126,8 +150,6 @@ const AddActivity = () => {
                     </form>
                 </Form>
             </Card>
-
-
         </div>
     );
 };
