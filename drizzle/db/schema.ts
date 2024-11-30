@@ -59,8 +59,10 @@ export const activityResourcesTable = pgTable('activity_resources', {
 // Schedules Table
 export const schedulesTable = pgTable('schedules', {
   id: serial('id').primaryKey(),
-  activityId: integer('activity_id').notNull().references(() => activitiesTable.id, { onDelete: 'cascade' }),
+  activityId: integer('activity_id')
+    .notNull()
+    .references(() => activitiesTable.id, { onDelete: 'cascade' }),
   scheduledDate: date('scheduled_date').notNull(),
-  notificationSent: integer('notification_sent').notNull().default(0), // 0 for false, 1 for true
+  notificationMessage: text('notification_message'), // Store the notification message
   createdAt: timestamp('created_at').notNull().defaultNow(),
 });

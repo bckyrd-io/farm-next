@@ -1,27 +1,37 @@
 import { db } from '../../../drizzle/db';
-import { activitiesTable } from '../../../drizzle/db/schema';
+import { activitiesTable, schedulesTable } from '../../../drizzle/db/schema';
 import { NextResponse } from 'next/server';
 import { eq } from 'drizzle-orm';
 
-// Create a new activity
+
 export async function POST(req: Request) {
     const { description, activityType, amount, activityDate } = await req.json();
-    console.log("test1");
+  
     try {
-        console.log("test2");
-        const newActivity = await db.insert(activitiesTable).values({
-            description,
-            activityType,
-            amount,
-            activityDate,
-        }).returning();
-
-        return NextResponse.json({ success: true, activity: newActivity });
+      // Insert the activity
+      const newActivity = await db.insert(activitiesTable).values({
+        description,
+        activityType,
+        amount,
+        activityDate,
+      }).returning();
+  
+      // If activityDate is in the future, create a schedule
+      if (new Date(activityDate) > new Date()) {
+        await db.insert(schedulesTable).values({
+          activityId: newActivity[0].id,
+          scheduledDate: activityDate,
+          notificationMessage: `Upcoming activity: ${description} on ${activityDate}`,
+        });
+      }
+  
+      return NextResponse.json({ success: true, activity: newActivity });
     } catch (error) {
-        console.error('Error creating activity:', error);
-        return NextResponse.json({ success: false, message: 'Server error' }, { status: 500 });
+      console.error('Error creating activity:', error);
+      return NextResponse.json({ success: false, message: 'Server error' }, { status: 500 });
     }
-}
+  }
+  
 
 // Get all activities
 export async function GET() {

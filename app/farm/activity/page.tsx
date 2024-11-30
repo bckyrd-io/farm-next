@@ -47,6 +47,9 @@ const AddActivity = () => {
             amount: Number(data.amount), // Convert amount to a number
         };
 
+        const currentDate = new Date().toISOString().split("T")[0]; // Format: YYYY-MM-DD
+        const isFutureDate = data.activityDate > currentDate;
+
         console.log("Parsed data:", parsedData);
 
         fetch("/api/activities", {
@@ -57,13 +60,24 @@ const AddActivity = () => {
             .then((response) => response.json())
             .then((result) => {
                 if (result.success) {
+                    if (isFutureDate) {
+                        alert(
+                            `You have successfully scheduled a future activity: "${data.description}" for ${data.activityDate}.`
+                        );
+                    } else {
+                        alert(
+                            `You have successfully created a new activity: "${data.description}" on ${data.activityDate}.`
+                        );
+                    }
                     console.log("Activity created successfully!", result.activity);
                 } else {
                     console.error("Error creating activity:", result.message);
+                    alert("An error occurred while creating the activity. Please try again.");
                 }
             })
             .catch((error) => {
                 console.error("Network or server error:", error);
+                alert("Network error: Unable to reach the server. Please try again later.");
             });
     };
 
@@ -80,7 +94,11 @@ const AddActivity = () => {
                                 <FormItem>
                                     <FormLabel>Description</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="Activity description" {...field} className="border rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-400" />
+                                        <Input
+                                            placeholder="Activity description"
+                                            {...field}
+                                            className="border rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                        />
                                     </FormControl>
                                     <FormMessage className="text-red-500 mt-1" />
                                 </FormItem>
@@ -94,8 +112,13 @@ const AddActivity = () => {
                                 <FormItem>
                                     <FormLabel>Activity Type</FormLabel>
                                     <FormControl>
-                                        <select {...field} className="border rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-400">
-                                            <option value="" disabled>Select type</option>
+                                        <select
+                                            {...field}
+                                            className="border rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                        >
+                                            <option value="" disabled>
+                                                Select type
+                                            </option>
                                             <option value="Revenue">Revenue</option>
                                             <option value="Expense">Expense</option>
                                             <option value="Neutral">Neutral</option>
@@ -144,7 +167,7 @@ const AddActivity = () => {
                             )}
                         />
 
-                        <Button variant={"default"} type="submit" >
+                        <Button variant={"default"} type="submit">
                             Add Activity
                         </Button>
                     </form>
