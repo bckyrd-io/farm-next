@@ -105,8 +105,9 @@ const AddResourcePage: React.FC = () => {
                                             <option value="" disabled>
                                                 Select type
                                             </option>
-                                            <option value="Human">Human</option>
+                                            
                                             <option value="Inventory">Inventory</option>
+                                            <option value="Human">Human</option>
                                         </select>
                                     </FormControl>
                                     <FormMessage />

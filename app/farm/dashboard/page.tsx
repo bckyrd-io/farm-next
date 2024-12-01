@@ -10,6 +10,7 @@ import {
     Legend,
     ResponsiveContainer,
 } from "recharts";
+import { useState, useEffect } from "react";
 import { Card } from "../../../components/ui/card";
 import {
     Table,
@@ -22,49 +23,97 @@ import {
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
-// Sample data for the dashboard
-const sampleData = {
-    activities: [
-        { id: 1, type: "Revenue", amount: 1500, date: "2024-10-18" },
-        { id: 2, type: "Expense", amount: 300, date: "2024-10-15" },
-        { id: 3, type: "Neutral", amount: 200, date: "2024-10-12" },
-    ],
-    metrics: {
-        totalRevenue: 1500,
-        totalExpenses: 300,
-        netProfit: 1200,
-    },
-    notifications: [
-        "New activity added.",
-        "You have unscheduled tasks.",
-        "Revenue has increased by 20% this month.",
-    ],
-};
+// TypeScript types for API response
+interface ActivityByType {
+    activityType: string;
+    totalAmount: number;
+    activities: string[];
+}
 
-// Bar chart data
-const chartData = [
-    { name: "Total Revenue", revenue: sampleData.metrics.totalRevenue },
-    { name: "Total Expenses", expenses: sampleData.metrics.totalExpenses },
-];
+interface ActivityListItem {
+    activityId: number;
+    activityType: string;
+    description: string;
+    amount: number;
+    createdAt: string;
+}
+
+interface Notification {
+    notificationMessage: string;
+}
 
 const Dashboard = () => {
+    const [activitiesByType, setActivitiesByType] = useState<ActivityByType[]>([]);
+    const [activitiesList, setActivitiesList] = useState<ActivityListItem[]>([]);
+    const [notifications, setNotifications] = useState<Notification[]>([]);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await fetch("http://localhost:3000/api/dashboard"); // API route
+                if (!response.ok) {
+                    throw new Error("Failed to fetch data");
+                }
+                const result = await response.json();
+
+                setActivitiesByType(result.activitiesByType);
+                setActivitiesList(result.activitiesList);
+                setNotifications(result.notifications);
+            } catch (err: any) {
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchData();
+    }, []);
+
+    if (loading) return <div>Loading...</div>;
+    if (error) return <div>Error: {error}</div>;
+
+    // Calculate net profit and add it to the chart data
+    const calculateNetProfit = () => {
+        let revenue = 0;
+        let expense = 0;
+
+        activitiesByType.forEach((activity) => {
+            if (activity.activityType === "Revenue") {
+                revenue += activity.totalAmount;
+            } else if (activity.activityType === "Expense") {
+                expense += activity.totalAmount;
+            }
+        });
+
+        return revenue - expense;
+    };
+
+    const chartData = activitiesByType.map((activity) => ({
+        name: activity.activityType,
+        revenue: activity.activityType === "Revenue" ? activity.totalAmount : 0,
+        expense: activity.activityType === "Expense" ? activity.totalAmount : 0,
+    }));
+
+    const netProfit = calculateNetProfit();
+
     return (
         <div className="flex flex-col items-center justify-center min-h-screen p-4">
             <h1 className="text-2xl font-bold mb-6">Dashboard</h1>
 
             {/* Metrics Section */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
-                <Card className="p-4 shadow-none">
-                    <h2 className="text-lg font-semibold">Total Revenue</h2>
-                    <p className="text-xl">${sampleData.metrics.totalRevenue}</p>
-                </Card>
-                <Card className="p-4 shadow-none">
-                    <h2 className="text-lg font-semibold">Total Expenses</h2>
-                    <p className="text-xl">${sampleData.metrics.totalExpenses}</p>
-                </Card>
+                {activitiesByType.map((activity) => (
+                    <Card className="p-4 shadow-none" key={activity.activityType}>
+                        <h2 className="text-lg font-semibold">{activity.activityType}</h2>
+                        <p className="text-xl">K{activity.totalAmount}</p>
+                    </Card>
+                ))}
+                {/* Display Net Profit */}
                 <Card className="p-4 shadow-none">
                     <h2 className="text-lg font-semibold">Net Profit</h2>
-                    <p className="text-xl">${sampleData.metrics.netProfit}</p>
+                    <p className="text-xl text-green-600">K{netProfit}</p>
                 </Card>
             </div>
 
@@ -72,21 +121,20 @@ const Dashboard = () => {
             <div className="mt-10 w-full">
                 <Card className="p-4 shadow-none">
                     <h2 className="text-lg font-semibold mb-4">Performance Overview</h2>
-                    <div className="w-full ">
+                    <div className="w-full">
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart
-                                width={500}
-                                height={300}
+                                height={300} width={300}
                                 data={chartData}
-                            // margin={{ top: 20, right: 30, left: 0, bottom: 20 }}
+                                margin={{ top: 20, right: 30, left: 0, bottom: 20 }}
                             >
                                 <CartesianGrid strokeDasharray="3 3" />
                                 <XAxis dataKey="name" />
-                                <YAxis />
+                                <YAxis domain={[0, 'dataMax']} />
                                 <Tooltip />
                                 <Legend />
                                 <Bar dataKey="revenue" fill="#33b76d" radius={4} />
-                                <Bar dataKey="expenses" fill="#dc2626" radius={4} />
+                                <Bar dataKey="expense" fill="#ff4d4d" radius={4} />
                             </BarChart>
                         </ResponsiveContainer>
                     </div>
@@ -105,17 +153,19 @@ const Dashboard = () => {
                         <TableRow>
                             <TableHead>ID</TableHead>
                             <TableHead>Type</TableHead>
+                            <TableHead>Description</TableHead>
                             <TableHead>Amount</TableHead>
                             <TableHead>Date</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {sampleData.activities.map((activity) => (
-                            <TableRow key={activity.id}>
-                                <TableCell>{activity.id}</TableCell>
-                                <TableCell>{activity.type}</TableCell>
-                                <TableCell>${activity.amount}</TableCell>
-                                <TableCell>{activity.date}</TableCell>
+                        {activitiesList.map((activity) => (
+                            <TableRow key={activity.activityId}>
+                                <TableCell>{activity.activityId}</TableCell>
+                                <TableCell>{activity.activityType}</TableCell>
+                                <TableCell>{activity.description}</TableCell>
+                                <TableCell>K{activity.amount}</TableCell>
+                                <TableCell>{new Date(activity.createdAt).toLocaleDateString()}</TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
@@ -124,13 +174,13 @@ const Dashboard = () => {
 
             {/* Notifications Section */}
             <div className="flex flex-col mt-10 w-full">
-                {sampleData.notifications.map((notification, index) => (
+                {notifications.map((notification, index) => (
                     <div
                         key={index}
                         className="bg-green-100 text-green-800 p-2 rounded mb-2"
                         style={{ color: "hsl(146.4, 56.4%, 45.9%)" }}
                     >
-                        {notification}
+                        {notification.notificationMessage}
                     </div>
                 ))}
             </div>
