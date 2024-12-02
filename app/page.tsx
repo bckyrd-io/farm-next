@@ -1,10 +1,11 @@
+// pages/login.tsx
 "use client";
 
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useRouter } from "next/navigation"; // Use this for redirection
+import { useRouter } from "next/navigation";
 import {
     Form,
     FormControl,
@@ -16,6 +17,7 @@ import {
 import { Input } from "../components/ui/input";
 import { Button } from "../components/ui/button";
 import { Card } from "../components/ui/card";
+import { useToast } from "../hooks/use-toast"; // Ensure this is the correct path
 
 // Define schema for validation
 const loginSchema = z.object({
@@ -33,7 +35,8 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 const LoginPage = () => {
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
-    const router = useRouter(); // Hook for navigation
+    const router = useRouter();
+    const { toast } = useToast(); // Hook for showing toasts
 
     const form = useForm<LoginFormValues>({
         resolver: zodResolver(loginSchema),
@@ -56,16 +59,24 @@ const LoginPage = () => {
 
             if (!response.ok) {
                 setError(result.message || "Failed to login");
+				toast({
+					variant: "destructive",
+					title: "Failed to login",
+					description: ` ${result.message}`,
+				});
             } else {
                 console.log("Login successful:", result.user);
-                alert(`Welcome, ${result.user.username}!`);
-                // Redirect to /farm/dashboard
-                router.push("/farm/dashboard");
+                toast({
+					variant:"default",
+                    title: `Welcome, ${result.user.username}!`,
+                    description: "You have successfully logged in.",
+                });
+                router.push("/farm/dashboard"); // Redirect after showing the toast
             }
         } catch (err) {
-            console.error("Error logging in:", err);
-            setError("An unexpected error occurred. Please try again.");
-        } finally {
+			console.error("Error logging in:", err);
+			setError("An unexpected error occurred. Please try again.");
+		} finally {
             setLoading(false);
         }
     };
@@ -111,18 +122,13 @@ const LoginPage = () => {
                             )}
                         />
 
-                        {error && (
-                            <div className="text-red-500 text-sm mb-4">
-                                {error}
-                            </div>
-                        )}
                         <Button
                             variant={"default"}
                             type="submit"
                             disabled={loading}
                             className="w-full"
                         >
-                            {loading ? "Logging in..." : "Login"}
+                            {loading ? "loading ..." : "Login"}
                         </Button>
                     </form>
                 </Form>
