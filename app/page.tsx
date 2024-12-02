@@ -60,7 +60,7 @@ const LoginPage = () => {
             if (!response.ok) {
                 setError(result.message || "Failed to login");
 				toast({
-					variant: "destructive",
+					variant: "default",
 					title: "Failed to login",
 					description: ` ${result.message}`,
 				});
