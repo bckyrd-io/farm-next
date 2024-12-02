@@ -4,114 +4,131 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { useRouter } from "next/navigation"; // Use this for redirection
 import {
-	Form,
-	FormControl,
-	FormField,
-	FormItem,
-	FormLabel,
-	FormMessage,
+    Form,
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
 } from "../components/ui/form";
 import { Input } from "../components/ui/input";
 import { Button } from "../components/ui/button";
 import { Card } from "../components/ui/card";
 
-
-
+// Define schema for validation
 const loginSchema = z.object({
-	username: z.string().min(1, {
-		message: "Username is required.",
-	}),
-	password: z.string().min(1, {
-		message: "Password is required.",
-	}),
+    username: z.string().min(1, {
+        message: "Username is required.",
+    }),
+    password: z.string().min(1, {
+        message: "Password is required.",
+    }),
 });
 
+// Infer types from schema
 type LoginFormValues = z.infer<typeof loginSchema>;
 
 const LoginPage = () => {
-	const [step, setStep] = useState(1);
-	const form = useForm<LoginFormValues>({
-		resolver: zodResolver(loginSchema),
-	});
+    const [error, setError] = useState<string | null>(null);
+    const [loading, setLoading] = useState(false);
+    const router = useRouter(); // Hook for navigation
 
-	const onNext = () => {
-		setStep(2);
-	};
+    const form = useForm<LoginFormValues>({
+        resolver: zodResolver(loginSchema),
+    });
 
-	const onSubmit = (data: LoginFormValues) => {
-		console.log("Login submitted:", data);
-		// Handle the login logic (e.g., send data to an API)
-	};
+    const onSubmit = async (data: LoginFormValues) => {
+        setLoading(true);
+        setError(null);
 
-	return (
-		<div className="flex justify-center items-center min-h-screen p-4">
+        try {
+            const response = await fetch("http://localhost:3000/api/users/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data),
+            });
 
-			<Card className="shadow-none w-1/3">
-				<Form {...form}>
-					<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 p-6">
-						{step === 1 && (
-							<FormField
-								control={form.control}
-								name="username"
-								render={({ field }) => (
-									<FormItem>
-										<FormLabel>Username</FormLabel>
-										<FormControl>
-											<Input
-												placeholder="Enter your username"
-												{...field}
-												className="border rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
-											/>
-										</FormControl>
-										<FormMessage className="text-red-500 mt-1" />
-									</FormItem>
-								)}
-							/>
-						)}
+            const result = await response.json();
 
-						{step === 2 && (
-							<FormField
-								control={form.control}
-								name="password"
-								render={({ field }) => (
-									<FormItem>
-										<FormLabel>Password</FormLabel>
-										<FormControl>
-											<Input
-												type="password"
-												placeholder="Enter your password"
-												{...field}
-												className="border rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
-											/>
-										</FormControl>
-										<FormMessage className="text-red-500 mt-1" />
-									</FormItem>
-								)}
-							/>
-						)}
+            if (!response.ok) {
+                setError(result.message || "Failed to login");
+            } else {
+                console.log("Login successful:", result.user);
+                alert(`Welcome, ${result.user.username}!`);
+                // Redirect to /farm/dashboard
+                router.push("/farm/dashboard");
+            }
+        } catch (err) {
+            console.error("Error logging in:", err);
+            setError("An unexpected error occurred. Please try again.");
+        } finally {
+            setLoading(false);
+        }
+    };
 
-						{step === 1 && (
-							<Button variant={"default"} type="button" onClick={onNext} className="w-full">
-								Next
-							</Button>
-						)}
+    return (
+        <div className="flex justify-center items-center min-h-screen p-4">
+            <Card className="shadow-none w-1/3">
+                <Form {...form}>
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 p-6">
+                        <FormField
+                            control={form.control}
+                            name="username"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Username</FormLabel>
+                                    <FormControl>
+                                        <Input
+                                            placeholder="Enter your username"
+                                            {...field}
+                                            className="border rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                        />
+                                    </FormControl>
+                                    <FormMessage className="text-red-500 mt-1" />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="password"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Password</FormLabel>
+                                    <FormControl>
+                                        <Input
+                                            type="password"
+                                            placeholder="Enter your password"
+                                            {...field}
+                                            className="border rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                        />
+                                    </FormControl>
+                                    <FormMessage className="text-red-500 mt-1" />
+                                </FormItem>
+                            )}
+                        />
 
-						{step === 2 && (
-							<>
-								<Button variant={"secondary"} type="button" onClick={() => setStep(1)} className="w-full ">
-									Back
-								</Button>
-								<Button variant={"default"} type="submit" className="w-full">
-									Login
-								</Button>
-							</>
-						)}
-					</form>
-				</Form>
-			</Card>
-		</div>
-	);
+                        {error && (
+                            <div className="text-red-500 text-sm mb-4">
+                                {error}
+                            </div>
+                        )}
+                        <Button
+                            variant={"default"}
+                            type="submit"
+                            disabled={loading}
+                            className="w-full"
+                        >
+                            {loading ? "Logging in..." : "Login"}
+                        </Button>
+                    </form>
+                </Form>
+            </Card>
+        </div>
+    );
 };
 
 export default LoginPage;
