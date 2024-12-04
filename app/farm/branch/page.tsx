@@ -60,9 +60,9 @@ const Branch = () => {
 					branches.map((branch) => (
 						<Card key={branch.id} className="p-4 shadow-none">
 							<h2 className="text-lg font-semibold">{branch.name} </h2>
-							<p className="text-xl text-gray-600">{branch.location} - <span className={`ml-2 ${branch.userCount > 0 ? "text-green-600" : "text-red-600"}`}>
-								{branch.userCount} <i>users</i>
-							</span></p>
+							<p className="text-xl text-gray-600">{branch.location} -
+								{branch.userCount} users
+							</p>
 
 						</Card>
 					))

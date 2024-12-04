@@ -1,28 +1,8 @@
 "use client";
 
-import {
-    Bar,
-    BarChart,
-    CartesianGrid,
-    XAxis,
-    YAxis,
-    Tooltip,
-    Legend,
-    ResponsiveContainer,
-} from "recharts";
+
 import { Card } from "../../components/ui/card";
-import {
-    Table,
-    TableHeader,
-    TableRow,
-    TableHead,
-    TableBody,
-    TableCell,
-} from "../../components/ui/table";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { AtomIcon, AxeIcon, BeerIcon, CarIcon, CctvIcon, CropIcon, HomeIcon, HotelIcon, KeyIcon, LockIcon, SaladIcon, ShipIcon } from "lucide-react";
-import { GearIcon } from "@radix-ui/react-icons";
+import { AtomIcon, CctvIcon, HotelIcon, SaladIcon, ShipIcon } from "lucide-react";
 
 
 const Dashboard = () => {

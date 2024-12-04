@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '../../../../drizzle/db';
-import { usersTable } from '../../../../drizzle/db/schema';
+import { db } from '../../../drizzle/db';
+import { usersTable } from '../../../drizzle/db/schema';
 import bcrypt from 'bcrypt'; // For password hashing
 import { string } from 'zod';
 
@@ -38,3 +38,16 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ message: 'Error creating user', error: error.message }, { status: 500 });
     }
 }
+
+
+// Get all resources
+export async function GET() {
+    try {
+        const users = await db.select().from(usersTable);
+        return NextResponse.json({ success: true, users });
+    } catch (error) {
+        console.error('Error fetching users:', error);
+        return NextResponse.json({ success: false, message: 'Server error' }, { status: 500 });
+    }
+}
+

@@ -72,7 +72,7 @@ const UserAddPage = () => {
         console.log("Form Data Submitted:", data);
 
         try {
-            const response = await fetch('/api/users/create', {
+            const response = await fetch('/api/users', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

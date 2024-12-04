@@ -25,8 +25,6 @@ export async function POST(req: Request) {
 }
 
 
-
-
 // Get All Branches with Additional Metrics (like user count)
 export async function GET() {
     try {

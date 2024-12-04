@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Card } from '../../../components/ui/card';
 import { Button } from '../../../components/ui/button';
@@ -8,45 +8,51 @@ import { Badge } from '../../../components/ui/badge';
 import { Avatar, AvatarImage, AvatarFallback } from "../../../components/ui/avatar";
 import { Table, TableHead, TableRow, TableBody, TableCell, TableHeader } from '../../../components/ui/table';
 
-// Sample data for the list of users
-const usersData = [
-    {
-        id: 1,
-        name: "John Doe",
-        email: "john.doe@example.com",
-        profilePicture: "/avatar.png",
-        role: "Admin",
-        joinedDate: "2023-06-15",
-    },
-    {
-        id: 2,
-        name: "Jane Smith",
-        email: "jane.smith@example.com",
-        profilePicture: "/avatar.png",
-        role: "User",
-        joinedDate: "2024-01-10",
-    },
-    {
-        id: 3,
-        name: "Bob Johnson",
-        email: "bob.johnson@example.com",
-        profilePicture: "/avatar.png",
-        role: "Moderator",
-        joinedDate: "2023-08-22",
-    },
-];
+
+// TypeScript types for API response
+interface usersData {
+    id: number;
+    username: string;
+    email: string;
+    image: string;
+    role: string;
+    createdAt: string;
+}
+
 
 const UserPage = () => {
-    const [users, setUsers] = useState(usersData);
+
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
+    const [users, setUsers] = useState<usersData[]>([]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await fetch("http://localhost:3000/api/users"); // API route
+                if (!response.ok) {
+                    throw new Error("Failed to fetch data");
+                }
+                const result = await response.json();
+               
+                setUsers(result.users);
+                
+            } catch (err: any) {
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchData();
+    }, []);
+
+    if (loading) return <div>Loading...</div>;
+    if (error) return <div>Error: {error}</div>;
 
     const handleEdit = (userId: number) => {
         console.log(`Edit user with ID: ${userId}`);
         // Implement edit user logic here
-    };
-
-    const handleResetPassword = (userId: number) => {
-        console.log(`Reset password for user with ID: ${userId}`);
-        // Implement password reset logic here
     };
 
     const handleDelete = (userId: number) => {
@@ -84,23 +90,20 @@ const UserPage = () => {
                                 <TableCell>{user.id}</TableCell>
                                 <TableCell>
                                     <Avatar className="h-10 w-10">
-                                        <AvatarImage src={user.profilePicture} alt={`${user.name} Profile Picture`} />
-                                        <AvatarFallback>{user.name[0]}</AvatarFallback>
+                                        <AvatarImage src={user.image} alt={`${user.username} Profile Picture`} />
+                                        <AvatarFallback>{user.username[0]}</AvatarFallback>
                                     </Avatar>
                                 </TableCell>
-                                <TableCell>{user.name}</TableCell>
+                                <TableCell>{user.username}</TableCell>
                                 <TableCell>{user.email}</TableCell>
                                 <TableCell>
                                     <Badge variant="outline">{user.role}</Badge>
                                 </TableCell>
-                                <TableCell>{new Date(user.joinedDate).toLocaleDateString()}</TableCell>
+                                <TableCell>{new Date(user.createdAt).toLocaleDateString()}</TableCell>
                                 <TableCell>
                                     <div className="flex space-x-2">
                                         <Button variant="outline" size="sm" onClick={() => handleEdit(user.id)}>
                                             Edit
-                                        </Button>
-                                        <Button variant="outline" size="sm" onClick={() => handleResetPassword(user.id)}>
-                                            Reset Password
                                         </Button>
                                         <Button variant="destructive" size="sm" onClick={() => handleDelete(user.id)}>
                                             Delete
