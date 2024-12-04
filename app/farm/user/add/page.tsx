@@ -1,14 +1,11 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import { Card } from '../../../../components/ui/card';
-import { Button } from '../../../../components/ui/button';
-import { Input } from '../../../../components/ui/input';
 import { useRouter } from 'next/navigation';
-import { useDropzone } from 'react-dropzone';
-import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { useDropzone } from 'react-dropzone';
 import {
     Form,
     FormField,
@@ -17,16 +14,18 @@ import {
     FormControl,
     FormMessage
 } from '../../../../components/ui/form';
+import { Input } from '../../../../components/ui/input';
+import { Button } from '../../../../components/ui/button';
+import { Card } from '../../../../components/ui/card';
+import { useToast } from '../../../../hooks/use-toast'; // Make sure this hook exists
 
-
-// Define the schema using zod
+// Schema for form validation using Zod
 const userSchema = z.object({
     username: z.string().min(1, "Full name is required"),
     email: z.string().email("Invalid email address"),
-    password: z.string().min(4, "Invalid password"),
+    password: z.string().min(4, "Password must be at least 4 characters long"),
     branchId: z.number().min(1, "Branch is required"),
 });
-
 
 type UserFormValues = z.infer<typeof userSchema>;
 
@@ -34,7 +33,9 @@ const UserAddPage = () => {
     const [branches, setBranches] = useState<{ id: number, name: string, location: string }[]>([]);
     const [profilePicture, setProfilePicture] = useState<File | null>(null);
     const [preview, setPreview] = useState<string | null>(null);
+    const [loading, setLoading] = useState(false);
     const router = useRouter();
+    const { toast } = useToast();
 
     const form = useForm<UserFormValues>({
         resolver: zodResolver(userSchema),
@@ -49,27 +50,34 @@ const UserAddPage = () => {
     // Fetch branches for the select dropdown
     useEffect(() => {
         const fetchBranches = async () => {
+            setLoading(true);
             try {
                 const response = await fetch('/api/branches');
                 const data = await response.json();
 
                 if (response.ok) {
-                    setBranches(data.branches); // Set branch data
+                    setBranches(data.branches);
                 } else {
-                    alert(`Error: ${data.message}`);
+                    throw new Error(data.message || "Failed to fetch branches.");
                 }
             } catch (error) {
                 console.error("Failed to fetch branches:", error);
-                alert("An unexpected error occurred.");
+                toast({
+                    variant: "destructive",
+                    title: "Error",
+                    description: "An error occurred while fetching branches. Please try again later.",
+                });
+            } finally {
+                setLoading(false);
             }
         };
 
         fetchBranches();
-    }, []);
+    }, [toast]);
 
-    // Handle the form submission
+    // Handle form submission
     const onSubmit = async (data: UserFormValues) => {
-        console.log("Form Data Submitted:", data);
+        setLoading(true);
 
         try {
             const response = await fetch('/api/users', {
@@ -83,22 +91,28 @@ const UserAddPage = () => {
             const result = await response.json();
 
             if (response.ok) {
-                alert("Branch created successfully!");
-                form.reset(); // Reset the form
+                toast({
+                    variant: "default",
+                    title: "User Created",
+                    description: `User "${data.username}" has been successfully added.`,
+                });
+                form.reset();
             } else {
-                alert(`Error: ${result.message}`);
+                throw new Error(result.message || "Failed to create user.");
             }
-
-
-            // Redirect after successful user creation
-            // router.push('/users');
-        } catch (error: any) {
+        } catch (error) {
             console.error("Error creating user:", error);
-            alert("Failed to create user. Please try again.");
+            toast({
+                variant: "destructive",
+                title: "Error",
+                description: "An unexpected error occurred. Please try again later.",
+            });
+        } finally {
+            setLoading(false);
         }
     };
 
-    // Function to handle file upload
+    // Handle file upload
     const onDrop = (acceptedFiles: File[]) => {
         const file = acceptedFiles[0];
         if (file) {
@@ -133,11 +147,14 @@ const UserAddPage = () => {
                                         <select
                                             {...field}
                                             className="border rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
-                                            onChange={(e) => field.onChange(Number(e.target.value))} // Ensure number type
+                                            disabled={loading}
+                                            onChange={(e) => field.onChange(Number(e.target.value))}
                                         >
-                                            <option value="" disabled>Select type</option>
+                                            <option value="" disabled>Select branch</option>
                                             {branches.map((branch) => (
-                                                <option key={branch.id} value={branch.id}> {branch.name} - {branch.location}</option>
+                                                <option key={branch.id} value={branch.id}>
+                                                    {branch.name} - {branch.location}
+                                                </option>
                                             ))}
                                         </select>
                                     </FormControl>
@@ -146,6 +163,7 @@ const UserAddPage = () => {
                             )}
                         />
 
+                        {/* Full Name */}
                         <FormField
                             control={form.control}
                             name="username"
@@ -160,6 +178,7 @@ const UserAddPage = () => {
                             )}
                         />
 
+                        {/* Email */}
                         <FormField
                             control={form.control}
                             name="email"
@@ -174,6 +193,7 @@ const UserAddPage = () => {
                             )}
                         />
 
+                        {/* Password */}
                         <FormField
                             control={form.control}
                             name="password"
@@ -188,7 +208,7 @@ const UserAddPage = () => {
                             )}
                         />
 
-                        {/* Drag-and-Drop Area */}
+                        {/* Drag-and-Drop Area for Profile Picture */}
                         <div
                             {...getRootProps()}
                             className="border-dashed border-2 border-gray-300 p-6 rounded-lg text-center cursor-pointer"
@@ -201,8 +221,8 @@ const UserAddPage = () => {
                             )}
                         </div>
 
-                        <Button type="submit" className="mt-4">
-                            Add User
+                        <Button type="submit" className="mt-4" disabled={loading}>
+                            {loading ? "Submitting..." : "Add User"}
                         </Button>
                     </form>
                 </Form>

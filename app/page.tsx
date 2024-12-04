@@ -43,6 +43,10 @@ const LoginPage = () => {
 
     const form = useForm<LoginFormValues>({
         resolver: zodResolver(loginSchema),
+        defaultValues: {
+            username: "", // Initialize default value for username
+            password: "", // Initialize default value for password
+        },
     });
 
     const onSubmit = async (data: LoginFormValues) => {
@@ -94,7 +98,6 @@ const LoginPage = () => {
         }
     };
 
-
     return (
         <div className="flex justify-center items-center min-h-screen p-4">
             <Card className="shadow-none w-1/3">
@@ -143,14 +146,12 @@ const LoginPage = () => {
                                                     <Eye className="h-5 w-5 text-gray-600" />
                                                 )}
                                             </button>
-
                                         </div>
                                     </FormControl>
                                     <FormMessage className="text-red-500 mt-1" />
                                 </FormItem>
                             )}
                         />
-
                         <Button
                             variant={"default"}
                             type="submit"

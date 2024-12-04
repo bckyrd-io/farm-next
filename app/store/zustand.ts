@@ -6,6 +6,7 @@ interface User {
   id: number;
   username: string;
   email: string;
+  role: string;
 }
 
 // Define the Zustand store's state and actions

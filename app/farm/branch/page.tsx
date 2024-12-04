@@ -63,7 +63,6 @@ const Branch = () => {
 							<p className="text-xl text-gray-600">{branch.location} -
 								{branch.userCount} users
 							</p>
-
 						</Card>
 					))
 				)}

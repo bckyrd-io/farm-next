@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -14,7 +15,9 @@ import {
 import { Input } from "../../../components/ui/input";
 import { Button } from "../../../components/ui/button";
 import { Card } from "../../../components/ui/card";
+import { useToast } from "../../../hooks/use-toast"; // Ensure this path is correct
 
+// Define schema for validation
 const activitySchema = z.object({
     description: z.string().min(1, {
         message: "Description is required.",
@@ -33,14 +36,25 @@ const activitySchema = z.object({
     }),
 });
 
+// Infer types from schema
 type ActivityFormValues = z.infer<typeof activitySchema>;
 
 const AddActivity = () => {
+    const [loading, setLoading] = useState(false);
+    const { toast } = useToast(); // Hook for showing toasts
+
     const form = useForm<ActivityFormValues>({
         resolver: zodResolver(activitySchema),
+        defaultValues: {
+            description: "", // Default value for description
+            activityType: "Neutral", // Default value for activity type
+            amount: 0, // Default value for amount as a number
+            activityDate: "", // Default value for activity date
+        },
     });
 
-    const onSubmit = (data: ActivityFormValues) => {
+    const onSubmit = async (data: ActivityFormValues) => {
+        setLoading(true);
         const parsedData = {
             ...data,
             amount: Number(data.amount), // Convert amount to a number
@@ -49,35 +63,36 @@ const AddActivity = () => {
         const currentDate = new Date().toISOString().split("T")[0]; // Format: YYYY-MM-DD
         const isFutureDate = data.activityDate > currentDate;
 
-        console.log("Parsed data:", parsedData);
-
-        fetch("/api/activities", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(parsedData),
-        })
-            .then((response) => response.json())
-            .then((result) => {
-                if (result.success) {
-                    if (isFutureDate) {
-                        alert(
-                            `You have successfully scheduled a future activity: "${data.description}" for ${data.activityDate}.`
-                        );
-                    } else {
-                        alert(
-                            `You have successfully created a new activity: "${data.description}" on ${data.activityDate}.`
-                        );
-                    }
-                    console.log("Activity created successfully!", result.activity);
-                } else {
-                    console.error("Error creating activity:", result.message);
-                    alert("An error occurred while creating the activity. Please try again.");
-                }
-            })
-            .catch((error) => {
-                console.error("Network or server error:", error);
-                alert("Network error: Unable to reach the server. Please try again later.");
+        try {
+            const response = await fetch("/api/activities", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(parsedData),
             });
+            const result = await response.json();
+
+            if (response.ok && result.success) {
+                toast({
+                    variant: "default",
+                    title: "Activity Created Successfully",
+                    description: isFutureDate
+                        ? `You have successfully scheduled a future activity: "${data.description}" for ${data.activityDate}.`
+                        : `You have successfully created a new activity: "${data.description}" on ${data.activityDate}.`,
+                });
+                console.log("Activity created successfully!", result.activity);
+            } else {
+                throw new Error(result.message || "Failed to create activity.");
+            }
+        } catch (error) {
+            console.error("Error creating activity:", error);
+            toast({
+                variant: "destructive",
+                title: "Error",
+                description: "An error occurred while creating the activity. Please try again.",
+            });
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -166,8 +181,8 @@ const AddActivity = () => {
                             )}
                         />
 
-                        <Button variant={"default"} type="submit">
-                            Add Activity
+                        <Button variant={"default"} type="submit" disabled={loading}>
+                            {loading ? "Submitting..." : "Add Activity"}
                         </Button>
                     </form>
                 </Form>

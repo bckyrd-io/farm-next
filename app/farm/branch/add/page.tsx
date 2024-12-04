@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -14,20 +15,32 @@ import {
 import { Input } from "../../../../components/ui/input";
 import { Button } from "../../../../components/ui/button";
 import { Card } from "../../../../components/ui/card";
+import { useToast } from "../../../../hooks/use-toast"; // Ensure the path is correct
 
+// Define schema for validation
 const branchSchema = z.object({
   name: z.string().min(1, { message: "Branch name is required." }),
   location: z.string().min(1, { message: "Branch location is required." }),
 });
 
+// Infer types from schema
 type BranchFormValues = z.infer<typeof branchSchema>;
 
 const AddBranch = () => {
+  const [loading, setLoading] = useState(false);
+  const { toast } = useToast(); // Hook for showing toasts
+
   const form = useForm<BranchFormValues>({
     resolver: zodResolver(branchSchema),
+    defaultValues: {
+      name: "", // Default value for branch name
+      location: "", // Default value for branch location
+    },
   });
 
   const onSubmit = async (data: BranchFormValues) => {
+    setLoading(true);
+
     try {
       const response = await fetch("/api/branches", {
         method: "POST",
@@ -39,15 +52,25 @@ const AddBranch = () => {
 
       const result = await response.json();
 
-      if (response.ok) {
-        alert("Branch created successfully!");
-        form.reset(); // Reset the form
+      if (response.ok && result.success) {
+        toast({
+          variant: "default",
+          title: "Branch Created Successfully",
+          description: `The branch "${data.name}" has been created successfully.`,
+        });
+        form.reset(); // Reset the form after successful submission
       } else {
-        alert(`Error: ${result.message}`);
+        throw new Error(result.message || "Failed to create branch.");
       }
     } catch (error) {
       console.error("Failed to create branch:", error);
-      alert("An unexpected error occurred.");
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "An unexpected error occurred. Please try again later.",
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -94,8 +117,8 @@ const AddBranch = () => {
               )}
             />
 
-            <Button variant={"default"} type="submit">
-              Add Branch
+            <Button variant={"default"} type="submit" disabled={loading}>
+              {loading ? "Submitting..." : "Add Branch"}
             </Button>
           </form>
         </Form>

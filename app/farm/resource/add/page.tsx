@@ -1,76 +1,119 @@
 "use client";
 
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import {
     Form,
-    FormControl,
     FormField,
     FormItem,
     FormLabel,
+    FormControl,
     FormMessage,
 } from "../../../../components/ui/form";
 import { Input } from "../../../../components/ui/input";
 import { Button } from "../../../../components/ui/button";
 import { Card } from "../../../../components/ui/card";
-import { useState, useEffect } from "react";
+import { useToast } from "../../../../hooks/use-toast"; // Custom hook for toast notifications
 
+// Schema for form validation using Zod
 const resourceSchema = z.object({
     name: z.string().min(1, { message: "Name is required." }),
-    quantity: z.preprocess((val) => parseFloat(val as string), z.number().min(0, { message: "Quantity must be a positive number." })),
+    quantity: z.preprocess((val) => parseFloat(val as string), z.number().min(0, { message: "Quantity must be a positive number." })).optional(),
     unit: z.string().optional(), // Unit is optional for Human resources
     resourceType: z.enum(["Human", "Inventory"], {
         errorMap: () => ({ message: "Select a valid resource type." }),
     }),
     activityId: z.string().optional(), // Activities are optional
-    allocatedQuantity: z
-        .preprocess((val) => (val !== "" ? parseFloat(val as string) : undefined), z.number().optional()),
 });
 
 type ResourceFormValues = z.infer<typeof resourceSchema>;
 
 const AddResourcePage: React.FC = () => {
+    const [activities, setActivities] = useState<{ id: string; description: string }[]>([]);
+    const { toast } = useToast(); // Custom hook for toast notifications
+    const [loading, setLoading] = useState(false); // State for loading status
+    const router = useRouter();
 
     const form = useForm<ResourceFormValues>({
         resolver: zodResolver(resourceSchema),
+        defaultValues: {
+            name: '',
+            quantity: 0,
+            unit: '',
+            resourceType: "Human", // Default set to "Human"
+            activityId: '',
+        },
     });
 
-    const [activities, setActivities] = useState<{ id: string; description: string }[]>([]);
-
+    // Fetch activities for the select dropdown
     useEffect(() => {
-        // Fetch the activities list from the API
-        fetch("/api/activities")
-            .then((res) => res.json())
-            .then((data) => {
+        const fetchActivities = async () => {
+            try {
+                const response = await fetch('/api/activities');
+                const data = await response.json();
                 if (Array.isArray(data.activities)) {
                     setActivities(data.activities);
+                } else {
+                    throw new Error("Failed to load activities.");
                 }
-            })
-            .catch((err) => console.error("Error fetching activities:", err));
-    }, []);
+            } catch (error) {
+                console.error("Error fetching activities:", error);
+                toast({
+                    variant: "destructive",
+                    title: "Error",
+                    description: "An error occurred while fetching activities. Please try again later.",
+                });
+            }
+        };
+        fetchActivities();
+    }, [toast]);
 
-    const onSubmit = (data: ResourceFormValues) => {
-        console.log("submited");
-        fetch("/api/resources", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data),
-        })
-            .then((res) => res.json())
-            .then((result) => {
-                console.log("Resource successfully added:", result);
-                alert("Resource added successfully!");
-            })
-            .catch((error) => console.error("Error adding resource:", error));
+    // Handle form submission
+    const onSubmit = async (data: ResourceFormValues) => {
+        setLoading(true); // Set loading to true when submission starts
+        try {
+            const response = await fetch('/api/resources', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                toast({
+                    variant: "default",
+                    title: "Resource Added",
+                    description: `Resource "${data.name}" has been successfully added.`,
+                });
+                form.reset();
+            } else {
+                throw new Error(result.message || "Failed to add resource.");
+            }
+        } catch (error) {
+            console.error("Error adding resource:", error);
+            toast({
+                variant: "destructive",
+                title: "Error",
+                description: "An unexpected error occurred. Please try again later.",
+            });
+        } finally {
+            setLoading(false); // Reset loading state after submission
+        }
     };
 
     return (
-        <div className="flex flex-col justify-center items-center min-h-screen">
+        <div className="flex flex-col justify-center items-center min-h-screen p-6">
             <h1 className="text-2xl font-bold mb-6 text-center">Add a New Resource</h1>
-            <Card className="shadow-none w-1/3">
+
+            <Card className="shadow-none w-full max-w-md p-6">
                 <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 p-6">
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                         {/* Name Field */}
                         <FormField
                             control={form.control}
@@ -79,11 +122,7 @@ const AddResourcePage: React.FC = () => {
                                 <FormItem>
                                     <FormLabel>Name</FormLabel>
                                     <FormControl>
-                                        <Input
-                                            placeholder="Resource name"
-                                            {...field}
-                                            className="border rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
-                                        />
+                                        <Input placeholder="Resource name" {...field} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -98,16 +137,9 @@ const AddResourcePage: React.FC = () => {
                                 <FormItem>
                                     <FormLabel>Resource Type</FormLabel>
                                     <FormControl>
-                                        <select
-                                            {...field}
-                                            className="border rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
-                                        >
-                                            <option value="" disabled>
-                                                Select type
-                                            </option>
-                                            
-                                            <option value="Inventory">Inventory</option>
+                                        <select {...field} className="border rounded-md p-2 w-full">
                                             <option value="Human">Human</option>
+                                            <option value="Inventory">Inventory</option>
                                         </select>
                                     </FormControl>
                                     <FormMessage />
@@ -115,25 +147,22 @@ const AddResourcePage: React.FC = () => {
                             )}
                         />
 
-                        {/* Quantity Field */}
-                        <FormField
-                            control={form.control}
-                            name="quantity"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Quantity</FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            type="number"
-                                            placeholder="0"
-                                            {...field}
-                                            className="border rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
-                                        />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
+                        {/* Conditional Quantity Field for Inventory */}
+                        {form.watch("resourceType") === "Inventory" && (
+                            <FormField
+                                control={form.control}
+                                name="quantity"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Quantity</FormLabel>
+                                        <FormControl>
+                                            <Input type="number" placeholder="0" {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        )}
 
                         {/* Conditional Unit Field for Inventory */}
                         {form.watch("resourceType") === "Inventory" && (
@@ -144,11 +173,7 @@ const AddResourcePage: React.FC = () => {
                                     <FormItem>
                                         <FormLabel>Unit</FormLabel>
                                         <FormControl>
-                                            <Input
-                                                placeholder="e.g., kg, liters"
-                                                {...field}
-                                                className="border rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
-                                            />
+                                            <Input placeholder="e.g., kg, liters" {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -156,58 +181,32 @@ const AddResourcePage: React.FC = () => {
                             />
                         )}
 
-                        {/* Activity and Allocated Quantity for Inventory */}
-                        {form.watch("resourceType") === "Inventory" && (
-                            <>
-                                <FormField
-                                    control={form.control}
-                                    name="activityId"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Associated Activity</FormLabel>
-                                            <FormControl>
-                                                <select
-                                                    {...field}
-                                                    className="border rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
-                                                >
-                                                    <option value="" disabled>
-                                                        Select activity
-                                                    </option>
-                                                    {activities.map((activity) => (
-                                                        <option key={activity.id} value={activity.id}>
-                                                            {activity.description}
-                                                        </option>
-                                                    ))}
-                                                </select>
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
+                        {/* Associated Activity Field for Both Human and Inventory */}
+                        <FormField
+                            control={form.control}
+                            name="activityId"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Associated Activity</FormLabel>
+                                    <FormControl>
+                                        <select {...field} className="border rounded-md p-2 w-full">
+                                            <option value="" disabled>Select activity</option>
+                                            {activities.map((activity) => (
+                                                <option key={activity.id} value={activity.id}>
+                                                    {activity.description}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
 
-                                <FormField
-                                    control={form.control}
-                                    name="allocatedQuantity"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Allocated Quantity</FormLabel>
-                                            <FormControl>
-                                                <Input
-                                                    type="number"
-                                                    placeholder="0"
-                                                    {...field}
-                                                    className="border rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
-                                                />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                            </>
-                        )}
-
-                        {/* Submit Button */}
-                        <Button type="submit">Add Resource</Button>
+                        {/* Submit Button with Loading State */}
+                        <Button type="submit" disabled={loading} className="w-full">
+                            {loading ? "Submitting..." : "Add Resource"}
+                        </Button>
                     </form>
                 </Form>
             </Card>

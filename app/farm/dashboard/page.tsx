@@ -142,7 +142,7 @@ const Dashboard = () => {
             </div>
 
             {/* Add User Button */}
-            <Link href="/activity">
+            <Link href="activity">
                 <Button className="mt-10" variant="default">Create New</Button>
             </Link>
 

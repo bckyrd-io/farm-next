@@ -17,7 +17,9 @@ export async function GET() {
         activities: sql<any>`ARRAY_AGG(${activitiesTable.description})`,
       })
       .from(activitiesTable)
+      .where(sql`${activitiesTable.activityType} != 'Neutral'`) // Add this condition to exclude 'neutral' activity type
       .groupBy(activitiesTable.activityType);
+
 
     // Fetch detailed activity list grouped by activity ID
     const activitiesList = await db
