@@ -23,7 +23,7 @@ const ResourcesPage = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch("http://localhost:3000/api/resources"); // API route
+                const response = await fetch("/api/resources"); // API route
                 if (!response.ok) {
                     throw new Error("Failed to fetch data");
                 }
