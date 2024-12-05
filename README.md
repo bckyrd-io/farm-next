@@ -151,7 +151,7 @@ Steps:
 2. Added the path to the Expo app folder to the `.vercelignore` file:
 
 ```bash
-  /type-app
+  /expo-type-app
 ```
 
 ### Future Plans
