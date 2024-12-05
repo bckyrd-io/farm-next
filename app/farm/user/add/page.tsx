@@ -124,10 +124,10 @@ const UserAddPage = () => {
     });
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen p-6">
+        <div className="flex flex-col items-center justify-center bg-dark min-h-screen p-6">
             <h1 className="text-2xl font-bold mb-6">Add New User</h1>
 
-            <Card className="w-full max-w-md p-4">
+            <Card className="shadow-none w-full max-w-sm p-4">
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col space-y-4">
                         <FormField

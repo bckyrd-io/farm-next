@@ -76,7 +76,7 @@ const AddBranch = () => {
 
   return (
     <div className="flex justify-center items-center min-h-screen">
-      <Card className="shadow-none w-1/3">
+      <Card className="shadow-none w-full max-w-sm p-4">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 p-6">
             {/* Branch Name */}

@@ -98,7 +98,7 @@ const AddActivity = () => {
     return (
         <div className="flex flex-col justify-center items-center min-h-screen">
             <h1 className="text-2xl font-bold mb-6 text-center">Create An Activity</h1>
-            <Card className="shadow-none w-1/3">
+            <Card className="shadow-none w-full max-w-sm p-4">
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 p-6">
                         <FormField

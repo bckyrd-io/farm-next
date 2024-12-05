@@ -109,7 +109,7 @@ const AddResourcePage: React.FC = () => {
         <div className="flex flex-col justify-center items-center min-h-screen p-6">
             <h1 className="text-2xl font-bold mb-6 text-center">Add a New Resource</h1>
 
-            <Card className="shadow-none w-full max-w-md p-6">
+            <Card className="shadow-none w-full max-w-sm p-4">
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                         {/* Name Field */}
