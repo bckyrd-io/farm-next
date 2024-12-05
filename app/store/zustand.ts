@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { persist, PersistStorage, StorageValue } from 'zustand/middleware';
+import { persist, PersistStorage} from 'zustand/middleware';
 
 // Define the User type
 interface User {

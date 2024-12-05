@@ -34,11 +34,11 @@ const UserPage = () => {
                     throw new Error("Failed to fetch data");
                 }
                 const result = await response.json();
-               
+
                 setUsers(result.users);
-                
-            } catch (err: any) {
-                setError(err.message);
+
+            } catch (err) {
+                setError((err as Error).message || "An error occurred");
             } finally {
                 setLoading(false);
             }

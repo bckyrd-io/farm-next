@@ -2,11 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '../../../drizzle/db';
 import { usersTable } from '../../../drizzle/db/schema';
 import bcrypt from 'bcrypt'; // For password hashing
-import { string } from 'zod';
 
 // Handle POST requests to create a new user
 export async function POST(req: NextRequest) {
-    const { username, email, password,  branchId, profilePicture } = await req.json();
+    const { username, email, password, branchId, profilePicture } = await req.json();
     console.log("the problem is here 0");
     // Validate required fields
     if (!username || !email || !password || !branchId) {
@@ -14,8 +13,8 @@ export async function POST(req: NextRequest) {
     }
 
     console.log("the problem is here 1");
-    //set default role to user
-    const role:string = "user";
+    // Set default role to user
+    const role: string = "user";
     try {
         // Hash the password before saving it
         const passwordHash = await bcrypt.hash(password, 10);
@@ -33,21 +32,29 @@ export async function POST(req: NextRequest) {
 
         // Send the inserted user as response
         return NextResponse.json(user, { status: 200 });
-    } catch (error:any) {
-        console.error("Error creating user:", error);
-        return NextResponse.json({ message: 'Error creating user', error: error.message }, { status: 500 });
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            console.error("Error creating user:", error);
+            return NextResponse.json({ message: 'Error creating user', error: error.message }, { status: 500 });
+        } else {
+            console.error("Unknown error occurred during user creation");
+            return NextResponse.json({ message: 'Error creating user', error: 'Unknown error' }, { status: 500 });
+        }
     }
 }
-
 
 // Get all resources
 export async function GET() {
     try {
         const users = await db.select().from(usersTable);
         return NextResponse.json({ success: true, users });
-    } catch (error) {
-        console.error('Error fetching users:', error);
-        return NextResponse.json({ success: false, message: 'Server error' }, { status: 500 });
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            console.error('Error fetching users:', error);
+            return NextResponse.json({ success: false, message: 'Server error' }, { status: 500 });
+        } else {
+            console.error('Unknown error occurred while fetching users');
+            return NextResponse.json({ success: false, message: 'Server error' }, { status: 500 });
+        }
     }
 }
-

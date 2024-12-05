@@ -28,10 +28,12 @@ export async function POST(req: Request) {
         const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
 
         if (isPasswordValid) {
-            // Respond with success and user data (without the password hash)
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const { passwordHash, ...userWithoutPassword } = user;
+            // Respond with success and user data (without the password hash)
             return NextResponse.json({ success: true, user: userWithoutPassword }, { status: 200 });
-        } else {
+        }
+        else {
             // Respond with invalid credentials message
             return NextResponse.json({ success: false, message: 'Invalid credentials' }, { status: 401 });
         }

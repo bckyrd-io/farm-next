@@ -47,7 +47,6 @@ const Dashboard = () => {
     const [activitiesList, setActivitiesList] = useState<ActivityListItem[]>([]);
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
-    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -61,8 +60,8 @@ const Dashboard = () => {
                 setActivitiesByType(result.activitiesByType);
                 setActivitiesList(result.activitiesList);
                 setNotifications(result.notifications);
-            } catch (err: any) {
-                setError(err.message);
+            } catch (err) {
+                console.error("Error fetching data:", err);
             } finally {
                 setLoading(false);
             }
@@ -72,7 +71,6 @@ const Dashboard = () => {
     }, []);
 
     if (loading) return <div>Loading...</div>;
-    if (error) return <div>Error: {error}</div>;
 
     // Calculate net profit and add it to the chart data
     const calculateNetProfit = () => {

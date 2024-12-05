@@ -1,5 +1,3 @@
-// /api/branches.ts
-
 import { db } from '../../../drizzle/db';
 import { branchesTable, usersTable } from '../../../drizzle/db/schema';
 import { eq, sql } from 'drizzle-orm';
@@ -16,14 +14,13 @@ export async function POST(req: Request) {
         });
 
         return NextResponse.json({ success: true, branch: newBranch });
-    } catch (error: any) {
-        if (error.message.includes('unique constraint')) {
+    } catch (error: unknown) {
+        if (error instanceof Error && error.message.includes('unique constraint')) {
             return NextResponse.json({ success: false, message: 'Branch name already exists' }, { status: 409 });
         }
         return NextResponse.json({ success: false, message: 'Server error' }, { status: 500 });
     }
 }
-
 
 // Get All Branches with Additional Metrics (like user count)
 export async function GET() {
@@ -41,7 +38,8 @@ export async function GET() {
             .groupBy(branchesTable.id); // Group by branch ID to get one row per branch
 
         return NextResponse.json({ success: true, branches: branchesWithUserCount });
-    } catch (error) {
+    } catch (error: unknown) {
+        console.error('Error fetching branches:', error);
         return NextResponse.json({ success: false, message: 'Server error' }, { status: 500 });
     }
 }
@@ -61,8 +59,8 @@ export async function PATCH(req: Request) {
         }
 
         return NextResponse.json({ success: true, branch: updatedBranch[0] });
-    } catch (error: any) {
-        if (error.message.includes('unique constraint')) {
+    } catch (error: unknown) {
+        if (error instanceof Error && error.message.includes('unique constraint')) {
             return NextResponse.json({ success: false, message: 'Branch name already exists' }, { status: 409 });
         }
         return NextResponse.json({ success: false, message: 'Server error' }, { status: 500 });
@@ -83,7 +81,8 @@ export async function DELETE(req: Request) {
         }
 
         return NextResponse.json({ success: true, message: 'Branch deleted successfully' });
-    } catch (error) {
+    } catch (error: unknown) {
+        console.error('Error deleting branch:', error);
         return NextResponse.json({ success: false, message: 'Server error' }, { status: 500 });
     }
 }

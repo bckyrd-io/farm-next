@@ -1,5 +1,5 @@
 import { db } from '../../../drizzle/db';
-import { resourcesTable, activityResourcesTable, activitiesTable } from '../../../drizzle/db/schema';
+import { resourcesTable, activityResourcesTable } from '../../../drizzle/db/schema';
 import { eq } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 

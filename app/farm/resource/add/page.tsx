@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -35,7 +34,6 @@ const AddResourcePage: React.FC = () => {
     const [activities, setActivities] = useState<{ id: string; description: string }[]>([]);
     const { toast } = useToast(); // Custom hook for toast notifications
     const [loading, setLoading] = useState(false); // State for loading status
-    const router = useRouter();
 
     const form = useForm<ResourceFormValues>({
         resolver: zodResolver(resourceSchema),

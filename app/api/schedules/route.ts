@@ -1,9 +1,9 @@
 import { db } from '../../../drizzle/db';
 import { schedulesTable, activitiesTable } from '../../../drizzle/db/schema';
 import { eq } from 'drizzle-orm';
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 
-export async function GET(request: NextRequest) {
+export async function GET() {
     try {
         // Fetch schedules with their related activity descriptions using a join
         const schedules = await db

@@ -1,25 +1,24 @@
 "use client";
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { useDropzone } from 'react-dropzone';
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { useDropzone } from "react-dropzone";
+import Image from "next/image";
 import {
     Form,
     FormField,
     FormItem,
     FormLabel,
     FormControl,
-    FormMessage
-} from '../../../../components/ui/form';
-import { Input } from '../../../../components/ui/input';
-import { Button } from '../../../../components/ui/button';
-import { Card } from '../../../../components/ui/card';
-import { useToast } from '../../../../hooks/use-toast'; // Make sure this hook exists
+    FormMessage,
+} from "../../../../components/ui/form";
+import { Input } from "../../../../components/ui/input";
+import { Button } from "../../../../components/ui/button";
+import { Card } from "../../../../components/ui/card";
+import { useToast } from "../../../../hooks/use-toast";
 
-// Schema for form validation using Zod
 const userSchema = z.object({
     username: z.string().min(1, "Full name is required"),
     email: z.string().email("Invalid email address"),
@@ -30,29 +29,26 @@ const userSchema = z.object({
 type UserFormValues = z.infer<typeof userSchema>;
 
 const UserAddPage = () => {
-    const [branches, setBranches] = useState<{ id: number, name: string, location: string }[]>([]);
-    const [profilePicture, setProfilePicture] = useState<File | null>(null);
+    const [branches, setBranches] = useState<{ id: number; name: string; location: string }[]>([]);
     const [preview, setPreview] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
-    const router = useRouter();
     const { toast } = useToast();
 
     const form = useForm<UserFormValues>({
         resolver: zodResolver(userSchema),
         defaultValues: {
-            username: '',
-            email: '',
-            password: '',
+            username: "",
+            email: "",
+            password: "",
             branchId: 0,
         },
     });
 
-    // Fetch branches for the select dropdown
     useEffect(() => {
         const fetchBranches = async () => {
             setLoading(true);
             try {
-                const response = await fetch('/api/branches');
+                const response = await fetch("/api/branches");
                 const data = await response.json();
 
                 if (response.ok) {
@@ -75,15 +71,14 @@ const UserAddPage = () => {
         fetchBranches();
     }, [toast]);
 
-    // Handle form submission
     const onSubmit = async (data: UserFormValues) => {
         setLoading(true);
 
         try {
-            const response = await fetch('/api/users', {
-                method: 'POST',
+            const response = await fetch("/api/users", {
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json',
+                    "Content-Type": "application/json",
                 },
                 body: JSON.stringify(data),
             });
@@ -97,6 +92,7 @@ const UserAddPage = () => {
                     description: `User "${data.username}" has been successfully added.`,
                 });
                 form.reset();
+                setPreview(null); // Reset preview image
             } else {
                 throw new Error(result.message || "Failed to create user.");
             }
@@ -112,11 +108,9 @@ const UserAddPage = () => {
         }
     };
 
-    // Handle file upload
     const onDrop = (acceptedFiles: File[]) => {
         const file = acceptedFiles[0];
         if (file) {
-            setProfilePicture(file);
             setPreview(URL.createObjectURL(file));
         }
     };
@@ -124,7 +118,7 @@ const UserAddPage = () => {
     const { getRootProps, getInputProps } = useDropzone({
         onDrop,
         accept: {
-            'image/*': ['.jpeg', '.jpg', '.png', '.webp']
+            "image/*": [".jpeg", ".jpg", ".png", ".webp"],
         },
         maxFiles: 1,
     });
@@ -136,7 +130,6 @@ const UserAddPage = () => {
             <Card className="w-full max-w-md p-4">
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col space-y-4">
-                        {/* Branch Select */}
                         <FormField
                             control={form.control}
                             name="branchId"
@@ -150,7 +143,9 @@ const UserAddPage = () => {
                                             disabled={loading}
                                             onChange={(e) => field.onChange(Number(e.target.value))}
                                         >
-                                            <option value="" disabled>Select branch</option>
+                                            <option value="" disabled>
+                                                Select branch
+                                            </option>
                                             {branches.map((branch) => (
                                                 <option key={branch.id} value={branch.id}>
                                                     {branch.name} - {branch.location}
@@ -163,7 +158,6 @@ const UserAddPage = () => {
                             )}
                         />
 
-                        {/* Full Name */}
                         <FormField
                             control={form.control}
                             name="username"
@@ -178,7 +172,6 @@ const UserAddPage = () => {
                             )}
                         />
 
-                        {/* Email */}
                         <FormField
                             control={form.control}
                             name="email"
@@ -193,7 +186,6 @@ const UserAddPage = () => {
                             )}
                         />
 
-                        {/* Password */}
                         <FormField
                             control={form.control}
                             name="password"
@@ -208,14 +200,19 @@ const UserAddPage = () => {
                             )}
                         />
 
-                        {/* Drag-and-Drop Area for Profile Picture */}
                         <div
                             {...getRootProps()}
                             className="border-dashed border-2 border-gray-300 p-6 rounded-lg text-center cursor-pointer"
                         >
                             <input {...getInputProps()} />
                             {preview ? (
-                                <img src={preview} alt="Profile Preview" className="mx-auto mb-4 w-24 h-24 rounded-full object-cover" />
+                                <Image
+                                    src={preview}
+                                    alt="Profile Preview"
+                                    width={96}
+                                    height={96}
+                                    className="mx-auto mb-4 w-24 h-24 rounded-full object-cover"
+                                />
                             ) : (
                                 <p>Drag & drop a photo here, or click to select a file</p>
                             )}

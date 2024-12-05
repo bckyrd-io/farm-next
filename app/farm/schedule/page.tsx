@@ -1,13 +1,23 @@
 "use client";
 
-import { Card } from '../../../components/ui/card';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import { useState, useEffect } from 'react';
 
+interface CalendarEvent {
+    id: string;
+    title: string;
+    start: string;
+    end?: string;
+    color?: string;
+    extendedProps?: {
+        description: string;
+    };
+}
+
 const SchedulePage = () => {
-    const [events, setEvents] = useState<any[]>([]);
+    const [events, setEvents] = useState<CalendarEvent[]>([]);
 
     useEffect(() => {
         // Fetch schedules from the API
@@ -18,7 +28,7 @@ const SchedulePage = () => {
 
                 if (data.success) {
                     // Truncate long titles and add primary color
-                    const formattedEvents = data.events.map((event: any) => ({
+                    const formattedEvents = data.events.map((event: CalendarEvent) => ({
                         ...event,
                         color: '#33b76d', // Primary color
                         title: event.title.length > 20
@@ -44,7 +54,7 @@ const SchedulePage = () => {
     return (
         <>
             <style jsx global>{`
-                .fc .fc-prevMonth-button ,
+                .fc .fc-prevMonth-button,
                 .fc .fc-nextMonth-button {
                     font-size: 18px !important;
                     background: #33b76d !important;
@@ -61,19 +71,19 @@ const SchedulePage = () => {
                     headerToolbar={{
                         left: 'prev,next today',
                         center: 'title',
-                        right: 'dayGridMonth,dayGridWeek,dayGridDay'
+                        right: 'dayGridMonth,dayGridWeek,dayGridDay',
                     }}
                     buttonText={{
                         today: 'Today',
                         month: 'Month',
                         week: 'Week',
-                        day: 'Day'
+                        day: 'Day',
                     }}
                     eventMouseEnter={(info) => {
                         // Custom tooltip logic
                         const event = info.event;
-                        const extendedProps = event.extendedProps;
-                        info.el.setAttribute('title', extendedProps.description || event.title);
+                        const extendedProps = event.extendedProps as CalendarEvent['extendedProps'];
+                        info.el.setAttribute('title', extendedProps?.description || event.title);
                     }}
                 />
 

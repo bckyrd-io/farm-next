@@ -7,9 +7,8 @@ import { Button } from '../../../components/ui/button';
 import { Badge } from '../../../components/ui/badge';
 import { Table, TableHead, TableRow, TableBody, TableCell, TableHeader } from '../../../components/ui/table';
 
-
 // TypeScript types for API response
-interface resourcesData {
+interface Resource {
     id: number;
     name: string;
     quantity: number;
@@ -17,12 +16,9 @@ interface resourcesData {
     resourceType: string;
 }
 
-
 const ResourcesPage = () => {
-
     const [loading, setLoading] = useState<boolean>(true);
-    const [error, setError] = useState<string | null>(null);
-    const [resources, setResources] = useState<resourcesData[]>([]);
+    const [resources, setResources] = useState<Resource[]>([]);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -32,11 +28,9 @@ const ResourcesPage = () => {
                     throw new Error("Failed to fetch data");
                 }
                 const result = await response.json();
-               
                 setResources(result.resources);
-                
-            } catch (err: any) {
-                setError(err.message);
+            } catch (error) {
+                console.error("Failed to fetch resources:", error);
             } finally {
                 setLoading(false);
             }
@@ -46,23 +40,17 @@ const ResourcesPage = () => {
     }, []);
 
     if (loading) return <div>Loading...</div>;
-    if (error) return <div>Error: {error}</div>;
-
-    const handleEdit = (resourceId: number) => {
-        console.log(`Edit resource with ID: ${resourceId}`);
-        // Implement edit resource logic here
-    };
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen p-4">
             <h1 className="text-2xl font-bold mb-6">Resource Management</h1>
 
-            {/* Add resource Button */}
+            {/* Add Resource Button */}
             <Link href="resource/add">
                 <Button className="mb-6" variant="default">Add New Resource</Button>
             </Link>
 
-            {/* resources List Table */}
+            {/* Resources List Table */}
             <Card className="w-full p-4 shadow-sm">
                 <Table className="w-full">
                     <TableHeader>
