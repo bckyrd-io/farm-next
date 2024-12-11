@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -15,7 +15,15 @@ import {
 import { Input } from "../../../components/ui/input";
 import { Button } from "../../../components/ui/button";
 import { Card } from "../../../components/ui/card";
-import { useToast } from "../../../hooks/use-toast"; // Ensure this path is correct
+
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogContent,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 // Define schema for validation
 const activitySchema = z.object({
@@ -39,29 +47,50 @@ const activitySchema = z.object({
 // Infer types from schema
 type ActivityFormValues = z.infer<typeof activitySchema>;
 
+interface Notification {
+    notificationMessage: string;
+}
+
 const AddActivity = () => {
     const [loading, setLoading] = useState(false);
-    const { toast } = useToast(); // Hook for showing toasts
+    const [notifications, setNotifications] = useState<Notification[]>([]);
+    const [showDialog, setShowDialog] = useState(false);
 
     const form = useForm<ActivityFormValues>({
         resolver: zodResolver(activitySchema),
         defaultValues: {
-            description: "", // Default value for description
-            activityType: "Neutral", // Default value for activity type
-            amount: 0, // Default value for amount as a number
-            activityDate: "", // Default value for activity date
+            description: "",
+            activityType: "Neutral",
+            amount: 0,
+            activityDate: "",
         },
     });
+
+    // Fetch notifications on component mount
+    useEffect(() => {
+        const fetchNotifications = async () => {
+            try {
+                const response = await fetch("/api/dashboard");
+                if (!response.ok) {
+                    throw new Error("Failed to fetch notifications");
+                }
+                const result = await response.json();
+                setNotifications(result.notifications || []);
+                setShowDialog(result.notifications.length > 0);
+            } catch (error) {
+                console.error("Error fetching notifications:", error);
+            }
+        };
+
+        fetchNotifications();
+    }, []);
 
     const onSubmit = async (data: ActivityFormValues) => {
         setLoading(true);
         const parsedData = {
             ...data,
-            amount: Number(data.amount), // Convert amount to a number
+            amount: Number(data.amount),
         };
-
-        const currentDate = new Date().toISOString().split("T")[0]; // Format: YYYY-MM-DD
-        const isFutureDate = data.activityDate > currentDate;
 
         try {
             const response = await fetch("/api/activities", {
@@ -72,27 +101,19 @@ const AddActivity = () => {
             const result = await response.json();
 
             if (response.ok && result.success) {
-                toast({
-                    variant: "default",
-                    title: "Activity Created Successfully",
-                    description: isFutureDate
-                        ? `You have successfully scheduled a future activity: "${data.description}" for ${data.activityDate}.`
-                        : `You have successfully created a new activity: "${data.description}" on ${data.activityDate}.`,
-                });
                 console.log("Activity created successfully!", result.activity);
             } else {
                 throw new Error(result.message || "Failed to create activity.");
             }
         } catch (error) {
             console.error("Error creating activity:", error);
-            toast({
-                variant: "destructive",
-                title: "Error",
-                description: "An error occurred while creating the activity. Please try again.",
-            });
         } finally {
             setLoading(false);
         }
+    };
+
+    const handleDialogClose = () => {
+        setShowDialog(false);
     };
 
     return (
@@ -171,8 +192,8 @@ const AddActivity = () => {
                                     <FormControl>
                                         <Input
                                             type="date"
-                                            value={field.value} // Ensure field.value is a string in YYYY-MM-DD format
-                                            onChange={(e) => field.onChange(e.target.value)} // Handle the change
+                                            value={field.value}
+                                            onChange={(e) => field.onChange(e.target.value)}
                                             className="border rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
                                         />
                                     </FormControl>
@@ -187,6 +208,27 @@ const AddActivity = () => {
                     </form>
                 </Form>
             </Card>
+
+            {showDialog && (
+                <AlertDialog open={showDialog}>
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>Notification</AlertDialogTitle>
+                        </AlertDialogHeader>
+                        <div className="text-sm text-muted-foreground space-y-2">
+                            <ol className="space-y-2">
+                                {notifications.map((notification, index) => (
+                                    <li key={index}> ➼ {notification.notificationMessage}</li>
+                                ))}
+                            </ol>
+                        </div>
+                        <AlertDialogFooter>
+                            <AlertDialogAction onClick={handleDialogClose}>CLOSE</AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
+            )}
+
         </div>
     );
 };

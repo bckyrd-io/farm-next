@@ -38,14 +38,9 @@ interface ActivityListItem {
     createdAt: string;
 }
 
-interface Notification {
-    notificationMessage: string;
-}
-
 const Dashboard = () => {
     const [activitiesByType, setActivitiesByType] = useState<ActivityByType[]>([]);
     const [activitiesList, setActivitiesList] = useState<ActivityListItem[]>([]);
-    const [notifications, setNotifications] = useState<Notification[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
 
     useEffect(() => {
@@ -59,7 +54,6 @@ const Dashboard = () => {
 
                 setActivitiesByType(result.activitiesByType);
                 setActivitiesList(result.activitiesList);
-                setNotifications(result.notifications);
             } catch (err) {
                 console.error("Error fetching data:", err);
             } finally {
@@ -139,7 +133,7 @@ const Dashboard = () => {
                 </Card>
             </div>
 
-            {/* Add User Button */}
+            {/* Add Activity Button */}
             <Link href="activity">
                 <Button className="mt-10" variant="default">Create New</Button>
             </Link>
@@ -169,19 +163,6 @@ const Dashboard = () => {
                     </TableBody>
                 </Table>
             </Card>
-
-            {/* Notifications Section */}
-            <div className="flex flex-col mt-10 w-full">
-                {notifications.map((notification, index) => (
-                    <div
-                        key={index}
-                        className="bg-green-100 text-green-800 p-2 rounded mb-2"
-                        style={{ color: "hsl(146.4, 56.4%, 45.9%)" }}
-                    >
-                        {notification.notificationMessage}
-                    </div>
-                ))}
-            </div>
         </div>
     );
 };
