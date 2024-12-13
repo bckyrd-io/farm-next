@@ -77,7 +77,7 @@ const LoginPage = () => {
         <div className="flex justify-center items-center min-h-screen p-4">
             <Card className="shadow-none w-full max-w-sm p-4">
                 <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 p-6">
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                         <FormField
                             control={form.control}
                             name="username"

@@ -12,7 +12,7 @@ const Dashboard = () => {
             {/* Metrics Section */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
                 <Card className="p-4 shadow-none">
-                    <h2 className="text-lg font-semibold">Farm</h2>
+                    <h2 className="text-lg font-semibold">Agriculture</h2>
                     <p className="text-xl text-primary"><SaladIcon /></p>
                 </Card>
                 <Card className="p-4 shadow-none">
