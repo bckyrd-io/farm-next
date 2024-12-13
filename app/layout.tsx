@@ -20,8 +20,8 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-	title: "Next Type App",
-	description: "Farm Revenue And Expenses",
+	title: "Next Farm",
+	description: "Grow Your Next Hustle .Farm Revenue And Expenses",
 };
 
 
