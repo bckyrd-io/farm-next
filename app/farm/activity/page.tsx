@@ -24,6 +24,8 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { toast } from "@/hooks/use-toast";
+import { useRouter } from "next/navigation";
 
 // Define schema for validation
 const activitySchema = z.object({
@@ -52,6 +54,7 @@ interface Notification {
 }
 
 const AddActivity = () => {
+    const router = useRouter(); // Initialize router here
     const [loading, setLoading] = useState(false);
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const [showDialog, setShowDialog] = useState(false);
@@ -101,7 +104,15 @@ const AddActivity = () => {
             const result = await response.json();
 
             if (response.ok && result.success) {
-                console.log("Activity created successfully!", result.activity);
+                toast({
+                    variant: "default",
+                    title: "New Activity",
+                    description: `The activity has been created successfully.`,
+                });
+                // Add delay before redirecting
+                setTimeout(() => {
+                    router.push("dashboard");
+                }, 2000); // 2000ms = 2 seconds delay
             } else {
                 throw new Error(result.message || "Failed to create activity.");
             }
