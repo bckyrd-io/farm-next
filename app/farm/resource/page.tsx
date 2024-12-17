@@ -42,7 +42,7 @@ const ResourcesPage = () => {
     if (loading) return <div>Loading...</div>;
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen p-4">
+        <div className="flex flex-col justify-center items-center min-h-[90vh] p-4">
             <h1 className="text-2xl font-bold mb-6">Resource Management</h1>
 
             {/* Add Resource Button */}

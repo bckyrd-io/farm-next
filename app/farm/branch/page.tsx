@@ -39,8 +39,8 @@ const Branch = () => {
 	}, []);
 
 	return (
-		<div className="flex flex-col items-center justify-center min-h-screen p-4">
-			<h1 className="text-2xl font-bold mb-6">Branches</h1>
+        <div className="flex flex-col justify-center items-center min-h-[90vh] p-4">
+			<h1 className="text-2xl font-bold mb-3">Branches</h1>
 
 			<Button
 				className="mt-4"

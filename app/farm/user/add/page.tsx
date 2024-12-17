@@ -124,7 +124,7 @@ const UserAddPage = () => {
     });
 
     return (
-        <div className="flex flex-col items-center justify-center bg-dark min-h-screen p-6">
+        <div className="flex flex-col justify-center items-center min-h-[90vh] p-4">
             <h1 className="text-2xl font-bold mb-6">Add New User</h1>
 
             <Card className="shadow-none w-full max-w-sm p-4">

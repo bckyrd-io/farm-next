@@ -156,9 +156,9 @@ const AddActivity = () => {
     const handleDialogClose = () => setShowDialog(false);
 
     return (
-        <div className="flex flex-col justify-center items-center min-h-screen">
+        <div className="flex flex-col justify-center items-center min-h-[90vh] p-4">
             <h1 className="text-2xl font-bold mb-6 text-center">Create A Farm Activity</h1>
-            <Card className="shadow-none w-full max-w-sm p-6">
+            <Card className="shadow-none w-full max-w-sm p-4">
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 ">
                         {/* Description Field with Combobox */}
@@ -291,7 +291,7 @@ const AddActivity = () => {
                         <AlertDialogHeader>
                             <AlertDialogTitle>Notification</AlertDialogTitle>
                         </AlertDialogHeader>
-                        <div className="text-sm text-muted-foreground space-y-2">
+                        <div className="text-sm text-muted-foreground">
                             <ol className="space-y-2">
                                 {notifications.map((notification, index) => (
                                     <li key={index}> ➞ {notification.notificationMessage}</li>

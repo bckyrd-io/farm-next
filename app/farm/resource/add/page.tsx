@@ -106,7 +106,7 @@ const AddResourcePage: React.FC = () => {
     };
 
     return (
-        <div className="flex flex-col justify-center items-center min-h-screen p-6">
+        <div className="flex flex-col justify-center items-center min-h-[90vh] p-4">
             <h1 className="text-2xl font-bold mb-6 text-center">Add a New Resource</h1>
 
             <Card className="shadow-none w-full max-w-sm p-4">

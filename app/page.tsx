@@ -74,7 +74,7 @@ const LoginPage = () => {
     };
 
     return (
-        <div className="flex justify-center items-center min-h-screen p-4">
+        <div className="flex flex-col justify-center items-center min-h-[90vh] p-4">
             <Card className="shadow-none w-full max-w-sm p-4">
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">

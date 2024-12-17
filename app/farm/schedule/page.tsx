@@ -60,7 +60,7 @@ const SchedulePage = () => {
                     background: #33b76d !important;
                 }
             `}</style>
-            <div className="flex flex-col items-center justify-center min-h-screen p-4">
+            <div className="flex flex-col justify-center items-center min-h-[90vh] p-4">
 
                 <FullCalendar
                     plugins={[dayGridPlugin, interactionPlugin]}
