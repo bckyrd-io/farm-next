@@ -15,7 +15,6 @@ import {
 import { Input } from "../../../components/ui/input";
 import { Button } from "../../../components/ui/button";
 import { Card } from "../../../components/ui/card";
-
 import {
     AlertDialog,
     AlertDialogAction,
@@ -24,10 +23,20 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Popover, PopoverTrigger, PopoverContent } from "../../../components/ui/popover";
+import {
+    Command,
+    CommandEmpty,
+    CommandGroup,
+    CommandInput,
+    CommandItem,
+    CommandList,
+} from "../../../components/ui/command";
+import { Check, ChevronsUpDown } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 
-// Define schema for validation
+// Validation schema
 const activitySchema = z.object({
     description: z.string().min(1, {
         message: "Description is required.",
@@ -46,18 +55,23 @@ const activitySchema = z.object({
     }),
 });
 
-// Infer types from schema
 type ActivityFormValues = z.infer<typeof activitySchema>;
 
 interface Notification {
     notificationMessage: string;
 }
 
+interface Activity {
+    id: number;
+    description: string;
+}
+
 const AddActivity = () => {
-    const router = useRouter(); // Initialize router here
+    const router = useRouter();
     const [loading, setLoading] = useState(false);
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const [showDialog, setShowDialog] = useState(false);
+    const [farmActivities, setFarmActivities] = useState<string[]>([]);
 
     const form = useForm<ActivityFormValues>({
         resolver: zodResolver(activitySchema),
@@ -69,14 +83,13 @@ const AddActivity = () => {
         },
     });
 
-    // Fetch notifications on component mount
+    // Fetch notifications
     useEffect(() => {
         const fetchNotifications = async () => {
             try {
                 const response = await fetch("/api/dashboard");
-                if (!response.ok) {
-                    throw new Error("Failed to fetch notifications");
-                }
+                if (!response.ok) throw new Error("Failed to fetch notifications");
+
                 const result = await response.json();
                 setNotifications(result.notifications || []);
                 setShowDialog(result.notifications.length > 0);
@@ -88,51 +101,67 @@ const AddActivity = () => {
         fetchNotifications();
     }, []);
 
-    const onSubmit = async (data: ActivityFormValues) => {
-        setLoading(true);
-        const parsedData = {
-            ...data,
-            amount: Number(data.amount),
+    // Fetch farm activities from API
+    useEffect(() => {
+        const fetchActivities = async () => {
+            try {
+                const response = await fetch("/api/activities");
+                if (!response.ok) throw new Error("Failed to fetch activities");
+
+                const result = await response.json();
+                if (result.success && Array.isArray(result.activities)) {
+                    const descriptions = result.activities.map((act: Activity) => act.description);
+                    setFarmActivities(descriptions);
+                }
+            } catch (error) {
+                console.error("Error fetching farm activities:", error);
+            }
         };
 
+        fetchActivities();
+    }, []);
+
+    const onSubmit = async (data: ActivityFormValues) => {
+        setLoading(true);
         try {
             const response = await fetch("/api/activities", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(parsedData),
+                body: JSON.stringify(data),
             });
-            const result = await response.json();
 
+            const result = await response.json();
             if (response.ok && result.success) {
                 toast({
                     variant: "default",
                     title: "New Activity",
-                    description: `The activity has been created successfully.`,
+                    description: "The activity has been created successfully.",
                 });
-                // Add delay before redirecting
-                setTimeout(() => {
-                    router.push("dashboard");
-                }, 2000); // 2000ms = 2 seconds delay
+                setTimeout(() => router.push("/dashboard"), 2000);
             } else {
                 throw new Error(result.message || "Failed to create activity.");
             }
         } catch (error) {
             console.error("Error creating activity:", error);
+            toast({
+                variant: "destructive",
+                title: "Error",
+                description: "Failed to create activity. Please try again.",
+            });
         } finally {
             setLoading(false);
         }
     };
 
-    const handleDialogClose = () => {
-        setShowDialog(false);
-    };
+    const handleDialogClose = () => setShowDialog(false);
 
     return (
         <div className="flex flex-col justify-center items-center min-h-screen">
-            <h1 className="text-2xl font-bold mb-6 text-center">Create An Activity</h1>
-            <Card className="shadow-none w-full max-w-sm p-4">
+            <h1 className="text-2xl font-bold mb-6 text-center">Create A Farm Activity</h1>
+            <Card className="shadow-none w-full max-w-sm p-6">
                 <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 p-6">
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 ">
+                        {/* Description Field with Combobox */}
                         <FormField
                             control={form.control}
                             name="description"
@@ -140,17 +169,55 @@ const AddActivity = () => {
                                 <FormItem>
                                     <FormLabel>Description</FormLabel>
                                     <FormControl>
-                                        <Input
-                                            placeholder="Activity description"
-                                            {...field}
-                                            className="border rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
-                                        />
+                                        <Popover>
+                                            <PopoverTrigger asChild>
+                                                <button
+                                                    type="button"
+                                                    className="border rounded-md p-2 w-full text-left flex justify-between items-center focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                                >
+                                                    {field.value || "Select or type a description"}
+                                                    <ChevronsUpDown className="ml-2 h-4 w-4 " />
+                                                </button>
+                                            </PopoverTrigger>
+                                            <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0 shadow-none">
+
+                                                <Command>
+                                                    <CommandInput
+                                                        placeholder="Search farm activities..."
+                                                        onValueChange={field.onChange}
+                                                    />
+                                                    <CommandList>
+                                                        <CommandEmpty>No results found.</CommandEmpty>
+                                                        <CommandGroup>
+                                                            {farmActivities.map((activity, index) => (
+                                                                <CommandItem
+                                                                    key={index}
+                                                                    value={activity}
+                                                                    onSelect={() =>
+                                                                        field.onChange(activity)
+                                                                    }
+                                                                >
+                                                                    <Check
+                                                                        className={` h-4 ${field.value === activity
+                                                                            ? "opacity-100"
+                                                                            : "opacity-0"
+                                                                            }`}
+                                                                    />
+                                                                    {activity}
+                                                                </CommandItem>
+                                                            ))}
+                                                        </CommandGroup>
+                                                    </CommandList>
+                                                </Command>
+                                            </PopoverContent>
+                                        </Popover>
                                     </FormControl>
-                                    <FormMessage className="text-red-500 mt-1" />
+                                    <FormMessage />
                                 </FormItem>
                             )}
                         />
 
+                        {/* Activity Type */}
                         <FormField
                             control={form.control}
                             name="activityType"
@@ -158,23 +225,20 @@ const AddActivity = () => {
                                 <FormItem>
                                     <FormLabel>Activity Type</FormLabel>
                                     <FormControl>
-                                        <select
-                                            {...field}
-                                            className="border rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
-                                        >
-                                            <option value="" disabled>
-                                                Select type
-                                            </option>
+                                        <select {...field} className="border rounded-md p-2 w-full">
                                             <option value="Revenue">Revenue</option>
                                             <option value="Expense">Expense</option>
                                             <option value="Neutral">Neutral</option>
                                         </select>
                                     </FormControl>
+
+
                                     <FormMessage className="text-red-500 mt-1" />
                                 </FormItem>
                             )}
                         />
 
+                        {/* Amount */}
                         <FormField
                             control={form.control}
                             name="amount"
@@ -194,6 +258,7 @@ const AddActivity = () => {
                             )}
                         />
 
+                        {/* Activity Date */}
                         <FormField
                             control={form.control}
                             name="activityDate"
@@ -213,7 +278,7 @@ const AddActivity = () => {
                             )}
                         />
 
-                        <Button variant={"default"} type="submit" disabled={loading}>
+                        <Button variant="default" type="submit" disabled={loading}>
                             {loading ? "Submitting..." : "Add Activity"}
                         </Button>
                     </form>
@@ -229,7 +294,7 @@ const AddActivity = () => {
                         <div className="text-sm text-muted-foreground space-y-2">
                             <ol className="space-y-2">
                                 {notifications.map((notification, index) => (
-                                    <li key={index}> ➼ {notification.notificationMessage}</li>
+                                    <li key={index}> ➞ {notification.notificationMessage}</li>
                                 ))}
                             </ol>
                         </div>
@@ -239,7 +304,6 @@ const AddActivity = () => {
                     </AlertDialogContent>
                 </AlertDialog>
             )}
-
         </div>
     );
 };
