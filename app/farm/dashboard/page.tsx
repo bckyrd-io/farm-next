@@ -103,7 +103,7 @@ const Dashboard = () => {
         // { title: "ID", data: "activityId" },
         { title: "Description", data: "description" },
         { title: "Type", data: "activityType" },
-        { title: "Amount (MWK)", data: "amount" },
+        { title: "Amount", data: "amount" },
         { title: "Date", data: "createdAt" },
     ];
 
@@ -167,12 +167,13 @@ const Dashboard = () => {
                     columns={columns}
                     options={{
                         ordering: true,
+                        info: true,
                         layout: {
                             topStart: 'buttons',
                         },
                         select: true,
                     }}
-                    className="display "
+                    className="display"
                 />
             </Card>
         </div>
