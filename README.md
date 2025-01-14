@@ -59,10 +59,9 @@ npm install
 #### 3. Setting Vercel database
 Running the Next.js API
 ```bash
-Copy code
-pnpm dlx vercel env pull .env.development.local
-or
 pnpm dlx vercel link
+then
+pnpm dlx vercel env pull .env.development.local
 ```
 #### 4. Running the Application
 Running the Next.js API
