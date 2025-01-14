@@ -1,5 +1,20 @@
 "use client";
 
+import { useState, useEffect } from "react";
+import { Card } from "../../../components/ui/card";
+import "datatables.net-dt/css/dataTables.dataTables.css"; // DataTables default CSS
+import "datatables.net-buttons-dt/css/buttons.dataTables.css"; // Buttons CSS
+import "datatables.net-responsive-dt"; // Responsive extension
+
+import DataTable from 'datatables.net-react';
+import DT from 'datatables.net-dt';
+import 'datatables.net-select-dt';
+import 'datatables.net-buttons-dt';
+import 'datatables.net-buttons/js/buttons.html5';
+import jszip from 'jszip';
+import pdfmake from 'pdfmake';
+
+
 import {
     Bar,
     BarChart,
@@ -10,18 +25,11 @@ import {
     Legend,
     ResponsiveContainer,
 } from "recharts";
-import { useState, useEffect } from "react";
-import { Card } from "../../../components/ui/card";
-import {
-    Table,
-    TableHeader,
-    TableRow,
-    TableHead,
-    TableBody,
-    TableCell,
-} from "../../../components/ui/table";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
+
+// Activate the DataTables module
+DataTable.use(DT);
+DT.Buttons.jszip(jszip);
+DT.Buttons.pdfMake(pdfmake);
 
 // TypeScript types for API response
 interface ActivityByType {
@@ -42,6 +50,12 @@ const Dashboard = () => {
     const [activitiesByType, setActivitiesByType] = useState<ActivityByType[]>([]);
     const [activitiesList, setActivitiesList] = useState<ActivityListItem[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
+
+    const chartData = activitiesByType.map((activity) => ({
+        name: activity.activityType,
+        revenue: activity.activityType === "Revenue" ? activity.totalAmount : 0,
+        expense: activity.activityType === "Expense" ? activity.totalAmount : 0,
+    }));
 
     useEffect(() => {
         const fetchData = async () => {
@@ -66,7 +80,7 @@ const Dashboard = () => {
 
     if (loading) return <div>Loading...</div>;
 
-    // Calculate net profit and add it to the chart data
+    // Calculate net profit
     const calculateNetProfit = () => {
         let revenue = 0;
         let expense = 0;
@@ -82,13 +96,24 @@ const Dashboard = () => {
         return revenue - expense;
     };
 
-    const chartData = activitiesByType.map((activity) => ({
-        name: activity.activityType,
-        revenue: activity.activityType === "Revenue" ? activity.totalAmount : 0,
-        expense: activity.activityType === "Expense" ? activity.totalAmount : 0,
-    }));
-
     const netProfit = calculateNetProfit();
+
+    // DataTable columns definition
+    const columns = [
+        // { title: "ID", data: "activityId" },
+        { title: "Description", data: "description" },
+        { title: "Type", data: "activityType" },
+        { title: "Amount (MWK)", data: "amount" },
+        { title: "Date", data: "createdAt" },
+    ];
+
+
+
+    // Format data for the DataTable
+    const data = activitiesList.map((activity) => ({
+        ...activity,
+        createdAt: new Date(activity.createdAt).toLocaleDateString(),
+    }));
 
     return (
         <div className="flex flex-col justify-center items-center min-h-[90vh] p-4">
@@ -99,15 +124,16 @@ const Dashboard = () => {
                 {activitiesByType.map((activity) => (
                     <Card className="p-4 shadow-none" key={activity.activityType}>
                         <h2 className="text-lg font-semibold">{activity.activityType}</h2>
-                        <p className="text-xl">K{activity.totalAmount}</p>
+                        <p className="text-xl">MWK{activity.totalAmount}</p>
                     </Card>
                 ))}
                 {/* Display Net Profit */}
                 <Card className="p-4 shadow-none">
                     <h2 className="text-lg font-semibold">Net Profit</h2>
-                    <p className="text-xl text-green-600">K{netProfit}</p>
+                    <p className="text-xl text-green-600">MWK{netProfit}</p>
                 </Card>
             </div>
+
 
             {/* Bar Chart Section */}
             <div className="mt-10 w-full">
@@ -133,35 +159,21 @@ const Dashboard = () => {
                 </Card>
             </div>
 
-            {/* Add Activity Button */}
-            <Link href="activity">
-                <Button className="mt-10" variant="default">Create New</Button>
-            </Link>
 
-            {/* Activities Overview */}
-            <Card className="w-full mt-5 shadow-none">
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead>ID</TableHead>
-                            <TableHead>Type</TableHead>
-                            <TableHead>Description</TableHead>
-                            <TableHead>Amount</TableHead>
-                            <TableHead>Date</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {activitiesList.map((activity) => (
-                            <TableRow key={activity.activityId}>
-                                <TableCell>{activity.activityId}</TableCell>
-                                <TableCell>{activity.activityType}</TableCell>
-                                <TableCell>{activity.description}</TableCell>
-                                <TableCell>K{activity.amount}</TableCell>
-                                <TableCell>{new Date(activity.createdAt).toLocaleDateString()}</TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
+            {/* Activities Overview using DataTable */}
+            <Card className="w-full mt-5 shadow-none p-4">
+                <DataTable
+                    data={data}
+                    columns={columns}
+                    options={{
+                        ordering: true,
+                        layout: {
+                            topStart: 'buttons',
+                        },
+                        select: true,
+                    }}
+                    className="display "
+                />
             </Card>
         </div>
     );
