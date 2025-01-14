@@ -100,7 +100,7 @@ const Dashboard = () => {
 
     // DataTable columns definition
     const columns = [
-        // { title: "ID", data: "activityId" },
+        { title: "ID", data: "activityId" },
         { title: "Description", data: "description" },
         { title: "Type", data: "activityType" },
         { title: "Amount", data: "amount" },
