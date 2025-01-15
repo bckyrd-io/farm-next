@@ -2,19 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { Card } from "../../../components/ui/card";
-import "datatables.net-dt/css/dataTables.dataTables.css"; // DataTables default CSS
-import "datatables.net-buttons-dt/css/buttons.dataTables.css"; // Buttons CSS
-import "datatables.net-responsive-dt"; // Responsive extension
-
-import DataTable from 'datatables.net-react';
-import DT from 'datatables.net-dt';
-import 'datatables.net-select-dt';
-import 'datatables.net-buttons-dt';
-import 'datatables.net-buttons/js/buttons.html5';
-import jszip from 'jszip';
-import pdfmake from 'pdfmake';
-
-
 import {
     Bar,
     BarChart,
@@ -25,6 +12,16 @@ import {
     Legend,
     ResponsiveContainer,
 } from "recharts";
+import "datatables.net-dt/css/dataTables.dataTables.css"; // DataTables default CSS
+import "datatables.net-buttons-dt/css/buttons.dataTables.css"; // Buttons CSS >change to tailwind
+import "datatables.net-responsive-dt";
+import DataTable from 'datatables.net-react';
+import DT from 'datatables.net-dt';
+import 'datatables.net-select-dt';//>change to select in primary color
+import 'datatables.net-buttons-dt';
+import 'datatables.net-buttons/js/buttons.html5';
+import jszip from 'jszip';
+import pdfmake from 'pdfmake';
 
 // Activate the DataTables module
 DataTable.use(DT);
