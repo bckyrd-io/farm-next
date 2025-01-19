@@ -51,7 +51,7 @@ const Branch = () => {
 				Create Branch
 			</Button>
 
-			<div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full mt-4">
+			<div className="grid grid-cols-1  gap-4 w-full mt-4">
 				{branches.length === 0 ? (
 					<Card className="p-4 shadow-none">
 						<h2 className="text-lg font-semibold">No branches available</h2>
