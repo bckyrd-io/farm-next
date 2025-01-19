@@ -51,7 +51,7 @@ const Branch = () => {
 				Create Branch
 			</Button>
 
-			<div className="grid grid-cols-1  gap-4 w-full mt-4">
+			<div className="grid grid-cols-1 gap-4 w-full mt-4">
 				{branches.length === 0 ? (
 					<Card className="p-4 shadow-none">
 						<h2 className="text-lg font-semibold">No branches available</h2>
@@ -60,9 +60,9 @@ const Branch = () => {
 					branches.map((branch) => (
 						<Card key={branch.id} className="p-4 shadow-none">
 							<h2 className="text-lg font-semibold">{branch.name} </h2>
-							<p className="text-xl text-gray-600">{branch.location} -
-								{branch.userCount} users
-							</p>
+							<i className="text-lg text-gray-600">{branch.location} -
+								{branch.userCount} staff
+							</i>
 						</Card>
 					))
 				)}
