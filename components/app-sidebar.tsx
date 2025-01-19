@@ -1,6 +1,6 @@
 "use client";
 import useUserStore from '../app/store/zustand'; // Import your Zustand store
-import { Calendar, Home, Settings, Users, Edit, FolderCheck } from 'lucide-react';
+import { Calendar, Home, Settings, Users, Edit, FolderCheck, PieChart } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation'; // Import necessary hooks
 import {
   Sidebar,
@@ -27,30 +27,38 @@ const items = [
     icon: Settings,
     roles: ['admin'],
   },
-  {
-    title: 'User',
-    url: 'farm/user',
-    icon: Users,
-    roles: ['admin'],
-  },
+  
   {
     title: 'Activity',
     url: 'farm/activity',
     icon: Edit,
-    roles: ['user', 'admin'],
+    roles: ['Staff', 'admin'],
   },
   {
     title: 'Plan',
     url: 'farm/schedule',
     icon: Calendar,
-    roles: ['user', 'admin'],
+    roles: ['Staff', 'admin'],
   },
   {
     title: 'Resource',
     url: 'farm/resource',
     icon: FolderCheck,
-    roles: ['user', 'admin'],
+    roles: ['Staff', 'admin'],
   },
+  {
+    title: 'Performance',
+    url: 'farm/staff',
+    icon: PieChart,
+    roles: ['admin'],
+  },
+  {
+    title: 'Users',
+    url: 'farm/user',
+    icon: Users,
+    roles: ['admin'],
+  },
+ 
 ];
 
 export function AppSidebar() {

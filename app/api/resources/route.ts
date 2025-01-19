@@ -5,9 +5,9 @@ import { NextResponse } from 'next/server';
 
 // Create a new resource
 export async function POST(req: Request) {
-    const { name, quantity, unit, resourceType, activityId, allocatedQuantity } = await req.json();
+    const { name, quantity, unit, activityId, allocatedQuantity } = await req.json();
 
-    if (!name || !resourceType) {
+    if (!name) {
         return NextResponse.json({ success: false, message: 'Missing required fields' }, { status: 400 });
     }
 
@@ -15,8 +15,7 @@ export async function POST(req: Request) {
         const newResource = await db.insert(resourcesTable).values({
             name,
             quantity: quantity || 0,
-            unit: resourceType === 'Inventory' ? unit : null,
-            resourceType,
+            unit: unit,
         }).returning();
 
         if (activityId) {
@@ -47,9 +46,9 @@ export async function GET() {
 
 // Update a resource
 export async function PUT(req: Request) {
-    const { id, name, quantity, unit, resourceType, activityId, allocatedQuantity } = await req.json();
+    const { id, name, quantity, unit, activityId, allocatedQuantity } = await req.json();
 
-    if (!id || !name || !resourceType) {
+    if (!id || !name ) {
         return NextResponse.json({ success: false, message: 'Missing required fields' }, { status: 400 });
     }
 
@@ -59,8 +58,7 @@ export async function PUT(req: Request) {
             .set({
                 name,
                 quantity: quantity || 0,
-                unit: resourceType === 'Inventory' ? unit : null,
-                resourceType,
+                unit: unit,
             })
             .where(eq(resourcesTable.id, id))
             .returning();

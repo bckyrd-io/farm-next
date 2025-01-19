@@ -43,11 +43,10 @@ const ResourcesPage = () => {
 
     return (
         <div className="flex flex-col justify-center items-center min-h-[90vh] p-4">
-            <h1 className="text-2xl font-bold mb-6">Resource Management</h1>
 
             {/* Add Resource Button */}
             <Link href="resource/add">
-                <Button className="mb-6" variant="default">Add New Resource</Button>
+                <Button className="mb-6" variant="default">Request Resource</Button>
             </Link>
 
             {/* Resources List Table */}
@@ -57,7 +56,6 @@ const ResourcesPage = () => {
                         <TableRow>
                             <TableHead>ID</TableHead>
                             <TableHead>Resource</TableHead>
-                            <TableHead>Type</TableHead>
                             <TableHead>Quantity</TableHead>
                             <TableHead>Unit</TableHead>
                         </TableRow>
@@ -67,7 +65,6 @@ const ResourcesPage = () => {
                             <TableRow key={resource.id}>
                                 <TableCell>{resource.id}</TableCell>
                                 <TableCell>{resource.name}</TableCell>
-                                <TableCell>{resource.resourceType}</TableCell>
                                 <TableCell>{resource.quantity}</TableCell>
                                 <TableCell>
                                     <Badge variant="outline">{resource.unit}</Badge>

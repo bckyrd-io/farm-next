@@ -13,8 +13,8 @@ export async function POST(req: NextRequest) {
     }
 
     console.log("the problem is here 1");
-    // Set default role to user
-    const role: string = "user";
+    // Set default role
+    const role: string = "Staff";
     try {
         // Hash the password before saving it
         const passwordHash = await bcrypt.hash(password, 10);

@@ -16,7 +16,7 @@ export const usersTable = pgTable('users', {
   passwordHash: text('password_hash').notNull(),
   email: text('email').notNull().unique(),
   branchId: integer('branch_id').notNull().references(() => branchesTable.id),
-  role: text('role').notNull().default('User'), // Add role column with a default role
+  role: text('role').notNull().default('Staff'), // Add role column with a default role
   image: text('image'), // Add image column to store the file path
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow().$onUpdateFn(() => new Date()),
@@ -38,7 +38,6 @@ export const resourcesTable = pgTable('resources', {
   name: text('name').notNull(),
   quantity: integer('quantity').notNull().default(0),
   unit: text('unit'), // Optional for Human resources
-  resourceType: text('resource_type').notNull(), // "Human" or "Inventory"
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow().$onUpdateFn(() => new Date()),
 });
@@ -66,3 +65,18 @@ export const schedulesTable = pgTable('schedules', {
   notificationMessage: text('notification_message'), // Store the notification message
   createdAt: timestamp('created_at').notNull().defaultNow(),
 });
+
+// Performance Table
+export const performanceTable = pgTable('performance', {
+    id: serial('id').primaryKey(),
+    userId: integer('user_id')
+      .notNull()
+      .references(() => usersTable.id, { onDelete: 'cascade' }), // Foreign key to users table
+    activityId: integer('activity_id')
+      .notNull()
+      .references(() => activitiesTable.id, { onDelete: 'cascade' }), // Foreign key to activities table
+    status: text('status').notNull().default('Assigned'), // e.g., Assigned, In Progress, Completed
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+    updatedAt: timestamp('updated_at').notNull().defaultNow().$onUpdateFn(() => new Date()),
+  });
+  

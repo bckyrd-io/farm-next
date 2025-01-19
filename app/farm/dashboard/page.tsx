@@ -104,8 +104,6 @@ const Dashboard = () => {
         { title: "Date", data: "createdAt" },
     ];
 
-
-
     // Format data for the DataTable
     const data = activitiesList.map((activity) => ({
         ...activity,
@@ -156,7 +154,6 @@ const Dashboard = () => {
                 </Card>
             </div>
 
-
             {/* Activities Overview using DataTable */}
             <Card className="w-full mt-5 shadow-none p-4">
                 <DataTable
@@ -164,6 +161,7 @@ const Dashboard = () => {
                     columns={columns}
                     options={{
                         ordering: true,
+                        responsive: true,
                         info: true,
                         layout: {
                             topStart: 'buttons',

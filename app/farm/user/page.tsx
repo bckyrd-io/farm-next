@@ -102,9 +102,6 @@ const UserPage = () => {
                                 <TableCell>{new Date(user.createdAt).toLocaleDateString()}</TableCell>
                                 <TableCell>
                                     <div className="flex space-x-2">
-                                        <Button variant="outline" size="sm" onClick={() => handleEdit(user.id)}>
-                                            Edit
-                                        </Button>
                                         <Button variant="destructive" size="sm" onClick={() => handleDelete(user.id)}>
                                             Delete
                                         </Button>

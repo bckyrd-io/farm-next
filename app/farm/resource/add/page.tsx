@@ -107,7 +107,7 @@ const AddResourcePage: React.FC = () => {
 
     return (
         <div className="flex flex-col justify-center items-center min-h-[90vh] p-4">
-            <h1 className="text-2xl font-bold mb-6 text-center">Add a New Resource</h1>
+            <h1 className="text-2xl font-bold mb-6 text-center">New Request</h1>
 
             <Card className="shadow-none w-full max-w-sm p-4">
                 <Form {...form}>
@@ -120,66 +120,41 @@ const AddResourcePage: React.FC = () => {
                                 <FormItem>
                                     <FormLabel>Name</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="Resource name" {...field} />
+                                        <Input placeholder="inventory name" {...field} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
                             )}
                         />
 
-                        {/* Resource Type Field */}
                         <FormField
                             control={form.control}
-                            name="resourceType"
+                            name="quantity"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Resource Type</FormLabel>
+                                    <FormLabel>Quantity</FormLabel>
                                     <FormControl>
-                                        <select {...field} className="border rounded-md p-2 w-full">
-                                            <option value="Human">Human</option>
-                                            <option value="Inventory">Inventory</option>
-                                        </select>
+                                        <Input type="number" placeholder="0" {...field} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
                             )}
                         />
 
-                        {/* Conditional Quantity Field for Inventory */}
-                        {form.watch("resourceType") === "Inventory" && (
-                            <FormField
-                                control={form.control}
-                                name="quantity"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Quantity</FormLabel>
-                                        <FormControl>
-                                            <Input type="number" placeholder="0" {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                        )}
+                        <FormField
+                            control={form.control}
+                            name="unit"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Unit</FormLabel>
+                                    <FormControl>
+                                        <Input placeholder="e.g., kg, liters" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
 
-                        {/* Conditional Unit Field for Inventory */}
-                        {form.watch("resourceType") === "Inventory" && (
-                            <FormField
-                                control={form.control}
-                                name="unit"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Unit</FormLabel>
-                                        <FormControl>
-                                            <Input placeholder="e.g., kg, liters" {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                        )}
-
-                        {/* Associated Activity Field for Both Human and Inventory */}
                         <FormField
                             control={form.control}
                             name="activityId"
@@ -203,8 +178,9 @@ const AddResourcePage: React.FC = () => {
 
                         {/* Submit Button with Loading State */}
                         <Button type="submit" disabled={loading} className="w-full">
-                            {loading ? "Submitting..." : "Add Resource"}
+                            {loading ? "Submitting..." : "submit"}
                         </Button>
+                        
                     </form>
                 </Form>
             </Card>

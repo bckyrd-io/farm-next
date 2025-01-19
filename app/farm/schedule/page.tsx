@@ -1,5 +1,14 @@
 "use client";
 
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogContent,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
@@ -16,8 +25,33 @@ interface CalendarEvent {
     };
 }
 
+interface Notification {
+    notificationMessage: string;
+}
+
 const SchedulePage = () => {
+
+    const [notifications, setNotifications] = useState<Notification[]>([]);
+    const [showDialog, setShowDialog] = useState(false);
     const [events, setEvents] = useState<CalendarEvent[]>([]);
+
+    // Fetch notifications
+    useEffect(() => {
+        const fetchNotifications = async () => {
+            try {
+                const response = await fetch("/api/dashboard");
+                if (!response.ok) throw new Error("Failed to fetch notifications");
+
+                const result = await response.json();
+                setNotifications(result.notifications || []);
+                setShowDialog(result.notifications.length > 0);
+            } catch (error) {
+                console.error("Error fetching notifications:", error);
+            }
+        };
+
+        fetchNotifications();
+    }, []);
 
     useEffect(() => {
         // Fetch schedules from the API
@@ -50,6 +84,8 @@ const SchedulePage = () => {
 
         fetchSchedules();
     }, []);
+
+    const handleDialogClose = () => setShowDialog(false);
 
     return (
         <>
@@ -87,7 +123,28 @@ const SchedulePage = () => {
                     }}
                 />
 
-                <h1 className="text-2xl font-bold mt-10 text-center">Scheduled Activities</h1>
+
+                {showDialog && (
+                    <AlertDialog open={showDialog}>
+                        <AlertDialogContent>
+                            <AlertDialogHeader>
+                                <AlertDialogTitle>
+                                    <h1 className="text-2xl font-bold mt-10 ">Scheduled Notifications</h1>
+                                </AlertDialogTitle>
+                            </AlertDialogHeader>
+                            <div className="text-sm text-muted-foreground">
+                                <ol className="space-y-2">
+                                    {notifications.map((notification, index) => (
+                                        <li key={index}> ➞ {notification.notificationMessage}</li>
+                                    ))}
+                                </ol>
+                            </div>
+                            <AlertDialogFooter>
+                                <AlertDialogAction onClick={handleDialogClose}>CLOSE</AlertDialogAction>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </AlertDialog>
+                )}
 
             </div>
         </>
