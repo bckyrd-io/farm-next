@@ -2,15 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { Card } from "../../../../../components/ui/card";
-import { Pie, PieChart, Tooltip, Legend, ResponsiveContainer, Cell } from "recharts";
+import { Pie, PieChart, Tooltip, Legend, Cell } from "recharts";
 import { useParams } from "next/navigation";
-import {
-    CardHeader,
-    CardTitle,
-    CardDescription,
-    CardContent,
-    CardFooter,
-} from "@/components/ui/card";
 
 interface PerformanceActivity {
     id: number;
@@ -38,7 +31,7 @@ const ChartPage = () => {
         const fetchPerformance = async () => {
             try {
                 // Make the API call using the dynamic userId
-                const response = await fetch(`http://localhost:3000/api/performance?userId=${userId}`);
+                const response = await fetch(`api/performance?userId=${userId}`);
                 const data = await response.json();
 
                 if (data.success) {
