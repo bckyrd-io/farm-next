@@ -1,88 +1,86 @@
-import { NextRequest, NextResponse } from "next/server";
 import { db } from "../../../drizzle/db";
-import { performanceTable, activitiesTable } from "../../../drizzle/db/schema";
-import { eq } from "drizzle-orm";
+import { performanceTable, activitiesTable, usersTable } from "../../../drizzle/db/schema";
+import { eq, or, and, isNull } from "drizzle-orm";
 
-// 1. Fetch all performances (Staff Page)
-export async function GET(req: NextRequest) {
+// Fetch all performances or specific user's performances
+export async function GET(req: Request) {
     try {
         const url = new URL(req.url);
         const userId = url.searchParams.get("userId");
 
-        console.log("Received GET request:");
-        console.log("URL:", req.url);
-        console.log("Extracted userId:", userId);
-
         if (userId) {
-            console.log("Fetching performance for specific user...");
-            // Fetch specific user's performance (Performance Page)
-            const performances = await db
-                .select({
-                    id: performanceTable.id,
-                    activity: activitiesTable.description,
-                    status: performanceTable.status,
-                    updatedAt: performanceTable.updatedAt,
-                })
-                .from(performanceTable)
-                .innerJoin(activitiesTable, eq(performanceTable.activityId, activitiesTable.id))
-                .where(eq(performanceTable.userId, Number(userId)));
-
-            console.log("Performance data for userId:", userId, performances);
-            return NextResponse.json({ success: true, performance: performances });
-        } else {
-            console.log("Fetching all performances for staff page...");
-            // Fetch all performances (Staff Page)
+            // Fetch specific user's performance where role is 'Staff'
             const performances = await db
                 .select({
                     id: performanceTable.id,
                     userId: performanceTable.userId,
-                    username: performanceTable.userId, // Assuming username can be fetched similarly
+                    username: usersTable.username,
+                    role: usersTable.role,
                     activity: activitiesTable.description,
                     status: performanceTable.status,
                     updatedAt: performanceTable.updatedAt,
                 })
-                .from(performanceTable)
-                .innerJoin(activitiesTable, eq(performanceTable.activityId, activitiesTable.id));
+                .from(usersTable)
+                .leftJoin(performanceTable, eq(usersTable.id, performanceTable.userId))
+                .leftJoin(activitiesTable, eq(performanceTable.activityId, activitiesTable.id))
+                .where(
+                    and(
+                        eq(usersTable.id, Number(userId)),
+                        eq(usersTable.role, "Staff")
+                    )
+                );
 
-            console.log("All performances fetched:", performances);
-            return NextResponse.json({ success: true, performance: performances });
+            return new Response(JSON.stringify({ success: true, performance: performances }), {
+                status: 200,
+            });
+        } else {
+            // Fetch all performances where role is 'Staff', including unassigned staff
+            const performances = await db
+                .select({
+                    id: performanceTable.id,
+                    userId: usersTable.id,
+                    username: usersTable.username,
+                    role: usersTable.role,
+                    activity: activitiesTable.description,
+                    status: performanceTable.status,
+                    updatedAt: performanceTable.updatedAt,
+                })
+                .from(usersTable)
+                .leftJoin(performanceTable, eq(usersTable.id, performanceTable.userId))
+                .leftJoin(activitiesTable, eq(performanceTable.activityId, activitiesTable.id))
+                .where(eq(usersTable.role, "Staff"));
+
+            return new Response(JSON.stringify({ success: true, performance: performances }), {
+                status: 200,
+            });
         }
     } catch (error) {
         console.error("Error fetching performance data:", error);
-        return NextResponse.json({ success: false, message: "Server error" }, { status: 500 });
+        return new Response(JSON.stringify({ success: false, message: "Server error" }), {
+            status: 500,
+        });
     }
 }
 
-// 2. Fetch chart-specific data (Chart Page)
-export async function POST(req: NextRequest) {
+// Create a new performance entry
+export async function POST(req: Request) {
     try {
-        console.log("Received POST request for chart data:");
-        const { userId } = await req.json();
+        const body = await req.json();
 
-        console.log("Request body:", { userId });
+        const newPerformance = await db.insert(performanceTable).values({
+            userId: body.userId,
+            activityId: body.activityId,
+            status: body.status,
+            updatedAt: new Date(), // Use Date object directly
+        });
 
-        if (!userId) {
-            console.warn("User ID is missing in request body");
-            return NextResponse.json(
-                { success: false, message: "User ID is required" },
-                { status: 400 }
-            );
-        }
-
-        console.log("Fetching chart data for userId:", userId);
-        const chartData = await db
-            .select({
-                activityType: activitiesTable.description,
-                totalAmount: performanceTable.status, // Assuming status represents the amount
-            })
-            .from(performanceTable)
-            .innerJoin(activitiesTable, eq(performanceTable.activityId, activitiesTable.id))
-            .where(eq(performanceTable.userId, Number(userId)));
-
-        console.log("Fetched chart data:", chartData);
-        return NextResponse.json({ success: true, chartData });
+        return new Response(JSON.stringify({ success: true, performance: newPerformance }), {
+            status: 201,
+        });
     } catch (error) {
-        console.error("Error fetching chart data:", error);
-        return NextResponse.json({ success: false, message: "Server error" }, { status: 500 });
+        console.error("Error creating performance entry:", error);
+        return new Response(JSON.stringify({ success: false, message: "Server error" }), {
+            status: 500,
+        });
     }
 }

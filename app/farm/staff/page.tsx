@@ -33,7 +33,25 @@ const StaffPage = () => {
                 }
 
                 const result = await response.json();
-                setPerformanceData(result.performance);
+                let groupedData: { [key: string]: PerformanceData[] } = {};
+
+                // Group the data by userId and activity
+                result.performance.forEach((item: PerformanceData) => {
+                    const key = `${item.userId}-${item.activity}`;
+                    if (!groupedData[key]) {
+                        groupedData[key] = [];
+                    }
+                    groupedData[key].push(item);
+                });
+
+                // For each group, pick the most recent entry based on updatedAt
+                const latestPerformanceData = Object.values(groupedData).map(group => {
+                    return group.reduce((latest, current) => {
+                        return new Date(current.updatedAt) > new Date(latest.updatedAt) ? current : latest;
+                    });
+                });
+
+                setPerformanceData(latestPerformanceData);
             } catch (err) {
                 setError((err as Error).message || "An error occurred.");
                 toast({
@@ -61,7 +79,7 @@ const StaffPage = () => {
                     <TableHeader>
                         <TableRow>
                             <TableHead>ID</TableHead>
-                            <TableHead>User</TableHead>
+                            <TableHead>Staff</TableHead>
                             <TableHead>Activity</TableHead>
                             <TableHead>Status</TableHead>
                             <TableHead>Last Updated</TableHead>

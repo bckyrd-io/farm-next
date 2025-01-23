@@ -14,7 +14,7 @@ export async function GET() {
         revenueAmount: sql<number>`SUM(CASE WHEN ${activitiesTable.activityType} = 'revenue' THEN ${activitiesTable.amount} ELSE 0 END)`,
         expenseAmount: sql<number>`SUM(CASE WHEN ${activitiesTable.activityType} = 'expense' THEN ${activitiesTable.amount} ELSE 0 END)`,
         netProfit: sql<number>`SUM(CASE WHEN ${activitiesTable.activityType} = 'revenue' THEN ${activitiesTable.amount} ELSE 0 END) - SUM(CASE WHEN ${activitiesTable.activityType} = 'expense' THEN ${activitiesTable.amount} ELSE 0 END)`,
-        activities: sql<string[]>`ARRAY_AGG(${activitiesTable.description})`, // Specify the type as string[]
+        activities: sql<string[]>`GROUP_CONCAT(${activitiesTable.description})`, // Specify the type as string[]
       })
       .from(activitiesTable)
       .where(sql`${activitiesTable.activityType} != 'Neutral'`) // Add this condition to exclude 'neutral' activity type

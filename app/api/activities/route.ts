@@ -14,7 +14,8 @@ export async function POST(req: Request) {
         activityType,
         amount,
         activityDate,
-      }).returning();
+      }).$returningId(); 
+      //    ^? { id: number }[]
   
       // If activityDate is in the future, create a schedule
       if (new Date(activityDate) > new Date()) {
@@ -52,8 +53,7 @@ export async function PUT(req: Request) {
         const updatedActivity = await db
             .update(activitiesTable)
             .set({ description, activityType, amount, activityDate })
-            .where(eq(activitiesTable.id, id))
-            .returning();
+            .where(eq(activitiesTable.id, id));
 
         if (!updatedActivity) {
             return NextResponse.json({ success: false, message: 'Activity not found' }, { status: 404 });

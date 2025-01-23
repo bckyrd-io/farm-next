@@ -1,16 +1,8 @@
 "use client";
-
 import { useState, useEffect } from "react";
 import { Card } from "../../../../../components/ui/card";
 import { Pie, PieChart, Tooltip, Legend, ResponsiveContainer, Cell } from "recharts";
 import { useParams } from "next/navigation";
-import {
-    CardHeader,
-    CardTitle,
-    CardDescription,
-    CardContent,
-    CardFooter,
-} from "@/components/ui/card";
 
 interface PerformanceActivity {
     id: number;
@@ -25,12 +17,30 @@ const ChartPage = () => {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
-    // Format data for the pie chart
-    const pieChartData = performanceData.map((item) => ({
-        name: item.activity,
-        status: item.status,
-        value: 1,
-    }));
+    // Helper function to group and count occurrences of statuses by activity
+    const getStatusCountByActivity = (data: PerformanceActivity[]) => {
+        const groupedData: { [key: string]: { [key: string]: number } } = {};
+
+        // Group by activity and count statuses
+        data.forEach((item) => {
+            if (!groupedData[item.activity]) {
+                groupedData[item.activity] = {};
+            }
+
+            groupedData[item.activity][item.status] = (groupedData[item.activity][item.status] || 0) + 1;
+        });
+
+        // Convert the grouped data to a pie chart friendly format
+        const chartData = Object.keys(groupedData).map((activity) => {
+            return Object.keys(groupedData[activity]).map((status) => ({
+                name: `${activity} - ${status}`,
+                status,
+                value: groupedData[activity][status],
+            }));
+        }).flat();
+
+        return chartData;
+    };
 
     const COLORS = ["#8884d8", "#82ca9d", "#ffc658", "#d0ed57", "#a4de6c"];
 
@@ -59,6 +69,9 @@ const ChartPage = () => {
     if (loading) return <div>Loading...</div>;
     if (error) return <div>Error: {error}</div>;
 
+    // Prepare pie chart data
+    const pieChartData = getStatusCountByActivity(performanceData);
+
     return (
         <div className="flex flex-col justify-center items-center min-h-[90vh] p-4">
             <h1 className="text-2xl font-bold mb-6">Staff Performance</h1>
@@ -69,11 +82,11 @@ const ChartPage = () => {
                     <Pie
                         data={pieChartData}
                         dataKey="value"
-                        nameKey="activity" // Pie chart will display the activity names
+                        nameKey="name" // Use combined name (activity - status) for display
                         cx="50%"
                         cy="50%"
                         outerRadius={120}
-                        label={({ name }) => `${name}`} // Display activity name in the pie chart
+                        label={({ name }) => `${name}`} // Display activity-status combination in the pie chart
                     >
                         {pieChartData.map((_, index) => (
                             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -82,9 +95,9 @@ const ChartPage = () => {
                     {/* Corrected Tooltip */}
                     <Tooltip />
                     <Legend
-                        formatter={(value) => value} // Show the status in the legend
+                        formatter={(value) => value} // Show the activity-status combo in the legend
                         payload={pieChartData.map((item) => ({
-                            value: item.status, // Now legend displays status
+                            value: item.name, // Now legend displays activity-status
                             type: "square",
                             id: item.status,
                             color: COLORS[pieChartData.indexOf(item) % COLORS.length],

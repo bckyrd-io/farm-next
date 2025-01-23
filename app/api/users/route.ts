@@ -28,7 +28,8 @@ export async function POST(req: NextRequest) {
             role,
             branchId,
             image: profilePicture || null, // Save the image URL (or null if no image)
-        }).returning();
+        }).$returningId(); 
+        //    ^? { id: number }[]
 
         // Send the inserted user as response
         return NextResponse.json(user, { status: 200 });

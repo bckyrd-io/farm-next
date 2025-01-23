@@ -8,12 +8,12 @@ export async function POST(req: Request) {
     const { name, location } = await req.json();
 
     try {
-        const newBranch = await db.insert(branchesTable).values({
+        await db.insert(branchesTable).values({
             name,
             location,
         });
 
-        return NextResponse.json({ success: true, branch: newBranch });
+        return NextResponse.json({ success: true, message: 'Branch created successfully' });
     } catch (error: unknown) {
         if (error instanceof Error && error.message.includes('unique constraint')) {
             return NextResponse.json({ success: false, message: 'Branch name already exists' }, { status: 409 });
@@ -49,16 +49,11 @@ export async function PATCH(req: Request) {
     const { id, name, location } = await req.json();
 
     try {
-        const updatedBranch = await db.update(branchesTable)
+        await db.update(branchesTable)
             .set({ name, location })
-            .where(eq(branchesTable.id, id))
-            .returning();
+            .where(eq(branchesTable.id, id));
 
-        if (updatedBranch.length === 0) {
-            return NextResponse.json({ success: false, message: 'Branch not found' }, { status: 404 });
-        }
-
-        return NextResponse.json({ success: true, branch: updatedBranch[0] });
+        return NextResponse.json({ success: true, message: 'Branch updated successfully' });
     } catch (error: unknown) {
         if (error instanceof Error && error.message.includes('unique constraint')) {
             return NextResponse.json({ success: false, message: 'Branch name already exists' }, { status: 409 });
@@ -73,12 +68,7 @@ export async function DELETE(req: Request) {
 
     try {
         const deletedBranch = await db.delete(branchesTable)
-            .where(eq(branchesTable.id, id))
-            .returning();
-
-        if (deletedBranch.length === 0) {
-            return NextResponse.json({ success: false, message: 'Branch not found' }, { status: 404 });
-        }
+            .where(eq(branchesTable.id, id));
 
         return NextResponse.json({ success: true, message: 'Branch deleted successfully' });
     } catch (error: unknown) {

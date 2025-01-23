@@ -16,7 +16,8 @@ export async function POST(req: Request) {
             name,
             quantity: quantity || 0,
             unit: unit,
-        }).returning();
+        }).$returningId(); 
+        //    ^? { id: number }[]
 
         if (activityId) {
             await db.insert(activityResourcesTable).values({
@@ -60,8 +61,7 @@ export async function PUT(req: Request) {
                 quantity: quantity || 0,
                 unit: unit,
             })
-            .where(eq(resourcesTable.id, id))
-            .returning();
+            .where(eq(resourcesTable.id, id));
 
         if (activityId) {
             await db
