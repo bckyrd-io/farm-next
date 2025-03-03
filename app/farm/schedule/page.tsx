@@ -128,8 +128,8 @@ const SchedulePage = () => {
                     <AlertDialog open={showDialog}>
                         <AlertDialogContent>
                             <AlertDialogHeader>
-                                <AlertDialogTitle>
-                                    <h1 className="text-2xl font-bold mt-10 ">Scheduled Notifications</h1>
+                                <AlertDialogTitle className="text-2xl font-bold mt-10">
+                                    Scheduled Notifications
                                 </AlertDialogTitle>
                             </AlertDialogHeader>
                             <div className="text-sm text-muted-foreground">

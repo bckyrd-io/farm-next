@@ -1,7 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { Card } from "../../components/ui/card";
-import { AtomIcon, CctvIcon, HotelIcon, SaladIcon, ShipIcon } from "lucide-react";
+import { CctvIcon, DrillIcon, FactoryIcon, HotelIcon, NutIcon, SaladIcon, TruckIcon } from "lucide-react";
 
 
 const Dashboard = () => {
@@ -11,26 +12,36 @@ const Dashboard = () => {
 
             {/* Metrics Section */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
-                <Card className="p-4 shadow-none">
-                    <h2 className="text-lg font-semibold">Agriculture</h2>
-                    <p className="text-xl text-primary"><SaladIcon /></p>
-                </Card>
-                <Card className="p-4 shadow-none">
-                    <h2 className="text-lg font-semibold">Real Estate</h2>
-                    <p className="text-xl text-primary"><HotelIcon/></p>
-                </Card>
-                <Card className="p-4 shadow-none">
-                    <h2 className="text-lg font-semibold">Security</h2>
-                    <p className="text-xl text-primary"><CctvIcon/></p>
-                </Card>
-                <Card className="p-4 shadow-none">
-                    <h2 className="text-lg font-semibold">Technical</h2>
-                    <p className="text-xl text-primary"><AtomIcon/></p>
-                </Card>
-                <Card className="p-4 shadow-none">
-                    <h2 className="text-lg font-semibold">Shipping</h2>
-                    <p className="text-xl text-primary"><ShipIcon /></p>
-                </Card>
+                <Link href="farm/dashboard">
+                    <Card className="p-4 shadow-none">
+                        <h2 className="text-lg font-semibold">Farm</h2>
+                        <p className="text-xl text-primary"><SaladIcon /></p>
+                    </Card>
+                </Link>
+                <Link href="real-estate/dashboard">
+                    <Card className="p-4 shadow-none">
+                        <h2 className="text-lg font-semibold">Real Estate</h2>
+                        <p className="text-xl text-primary"><HotelIcon /></p>
+                    </Card>
+                </Link>
+                <Link href="technical/dashboard">
+                    <Card className="p-4 shadow-none">
+                        <h2 className="text-lg font-semibold">Technical</h2>
+                        <p className="text-xl text-primary"><DrillIcon/></p>
+                    </Card>
+                </Link>
+                <Link href="security/dashboard">
+                    <Card className="p-4 shadow-none">
+                        <h2 className="text-lg font-semibold">Security</h2>
+                        <p className="text-xl text-primary"><CctvIcon /></p>
+                    </Card>
+                </Link>
+                <Link href="transport/dashboard">
+                    <Card className="p-4 shadow-none">
+                        <h2 className="text-lg font-semibold">Transport</h2>
+                        <p className="text-xl text-primary"><TruckIcon /></p>
+                    </Card>
+                </Link>
             </div>
 
         </div>

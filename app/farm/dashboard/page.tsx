@@ -17,7 +17,6 @@ import "datatables.net-buttons-dt/css/buttons.dataTables.css"; // Buttons CSS >c
 import "datatables.net-responsive-dt";
 import DataTable from 'datatables.net-react';
 import DT from 'datatables.net-dt';
-import 'datatables.net-select-dt';//>change to select in primary color
 import 'datatables.net-buttons-dt';
 import 'datatables.net-buttons/js/buttons.html5';
 import jszip from 'jszip';
@@ -166,7 +165,6 @@ const Dashboard = () => {
                         layout: {
                             topStart: 'buttons',
                         },
-                        select: true,
                     }}
                     className="display"
                 />

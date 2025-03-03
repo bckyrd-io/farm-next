@@ -137,7 +137,7 @@ const AddActivity = () => {
                     title: "New Activity",
                     description: "The activity has been created successfully.",
                 });
-                setTimeout(() => router.push("/dashboard"), 2000);
+                setTimeout(() => router.push("/farm/dashboard"), 2000);
             } else {
                 throw new Error(result.message || "Failed to create activity.");
             }

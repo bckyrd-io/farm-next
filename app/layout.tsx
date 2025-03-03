@@ -20,8 +20,8 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-	title: "Farm Next",
-	description: "Grow Your Next Hustle .Farm Revenue And Expenses",
+	title: "Eco Harvest - Farm Management System",
+	description: "Farm Management System",
 };
 
 

@@ -35,7 +35,7 @@ const items = [
     roles: ['Staff', 'admin'],
   },
   {
-    title: 'Plan',
+    title: 'Schedule',
     url: 'farm/schedule',
     icon: Calendar,
     roles: ['Staff', 'admin'],

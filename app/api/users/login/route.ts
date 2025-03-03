@@ -1,4 +1,4 @@
-import bcrypt from 'bcrypt';
+// import bcrypt from 'bcrypt';
 import { db } from '../../../../drizzle/db';
 import { usersTable } from '../../../../drizzle/db/schema';
 import { eq } from 'drizzle-orm';
@@ -25,9 +25,10 @@ export async function POST(req: Request) {
         }
 
         // Compare the provided password with the stored hashed password
-        const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
-
-        if (isPasswordValid) {
+        // const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
+       
+        
+        if (password == user.passwordHash) {
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const { passwordHash, ...userWithoutPassword } = user;
             // Respond with success and user data (without the password hash)
