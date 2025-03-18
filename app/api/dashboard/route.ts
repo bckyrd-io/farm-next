@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { db } from '../../../drizzle/db'; // Adjusted path to the `db` setup
-import { activitiesTable, schedulesTable } from '../../../drizzle/db/schema'; // Correct schema import
+import { activitiesTable, activityResourcesTable, branchesTable, performanceTable, resourcesTable, schedulesTable, usersTable } from '../../../drizzle/db/schema'; // Correct schema import
 import { sql } from 'drizzle-orm'; // SQL utilities from Drizzle ORM
 
 // GET function for the `/api/dashboard` route
@@ -22,14 +22,34 @@ export async function GET() {
 
     // Fetch detailed activity list grouped by activity ID
     const activitiesList = await db
-      .select({
+    .select({
         activityId: activitiesTable.id,
         activityType: activitiesTable.activityType,
         description: activitiesTable.description,
         amount: activitiesTable.amount,
         createdAt: activitiesTable.createdAt,
-      })
-      .from(activitiesTable);
+        resourcesUsed: sql<string>`IFNULL(GROUP_CONCAT(DISTINCT 
+            CONCAT(${resourcesTable.name}, ' (', ${activityResourcesTable.allocatedQuantity}, ' ', ${resourcesTable.unit}, ')')
+            SEPARATOR ', '), '')`,
+        assignedStaff: sql<string>`IFNULL(GROUP_CONCAT(DISTINCT
+            CONCAT(${usersTable.username}, ' [', ${performanceTable.status}, ']') 
+            SEPARATOR ', '), '')`,
+        upcomingDates: sql<string>`IFNULL(GROUP_CONCAT(DISTINCT
+            DATE_FORMAT(${schedulesTable.scheduledDate}, '%Y-%m-%d') 
+            SEPARATOR ', '), '')`,
+        involvedBranches: sql<string>`IFNULL(GROUP_CONCAT(DISTINCT 
+            ${branchesTable.location} 
+            SEPARATOR ', '), '')`
+    })
+    .from(activitiesTable)
+    .leftJoin(activityResourcesTable, sql`${activityResourcesTable.activityId} = ${activitiesTable.id}`)
+    .leftJoin(resourcesTable, sql`${resourcesTable.id} = ${activityResourcesTable.resourceId}`)
+    .leftJoin(performanceTable, sql`${performanceTable.activityId} = ${activitiesTable.id}`)
+    .leftJoin(usersTable, sql`${usersTable.id} = ${performanceTable.userId}`)
+    .leftJoin(branchesTable, sql`${branchesTable.id} = ${usersTable.branchId}`)
+    .leftJoin(schedulesTable, sql`${schedulesTable.activityId} = ${activitiesTable.id}`)
+    .groupBy(activitiesTable.id);
+
 
     // Fetch notifications from the schedules table
     const notifications = await db

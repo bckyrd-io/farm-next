@@ -1,139 +1,261 @@
 "use client";
-import React from "react";
+
+import { useRouter } from 'next/navigation';
+import { Button } from "@/components/ui/button";
+import { ChevronRight, ArrowRight, HelpCircleIcon, LogInIcon } from "lucide-react";
+import { motion } from "framer-motion";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { useRouter } from "next/navigation";
-import useUserStore from "./store/zustand";
-import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-} from "../components/ui/form";
-import { Input } from "../components/ui/input";
-import { Button } from "../components/ui/button";
-import { Card } from "../components/ui/card";
-import { useToast } from "../hooks/use-toast";
-import { Eye, EyeOff } from "lucide-react";
 
-const loginSchema = z.object({
-    username: z.string().min(1, { message: "Username is required." }),
-    password: z.string().min(1, { message: "Password is required." }),
-});
-
-type LoginFormValues = z.infer<typeof loginSchema>;
-
-const LoginPage = () => {
-    const [loading, setLoading] = useState(false);
-    const [showPassword, setShowPassword] = useState(false);
+export default function LandingPage() {
     const router = useRouter();
-    const { toast } = useToast();
-    const setUser = useUserStore((state) => state.setUser);
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
 
-    const form = useForm<LoginFormValues>({
-        resolver: zodResolver(loginSchema),
-        defaultValues: { username: "", password: "" },
-    });
+    const handleLogin = (e: React.MouseEvent<HTMLButtonElement>): void => {
+        e.preventDefault();
+        router.push("/farm/");
+    };
 
-    const onSubmit = async (data: LoginFormValues) => {
-        setLoading(true);
-        try {
-            const response = await fetch("/api/users/login", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(data),
-            });
-            const result = await response.json();
-
-            if (!response.ok) {
-                toast({ variant: "default", title: "Failed to login", description: result.message });
-                return;
-            }
-
-            setUser(result.user);
-            toast({
-                variant: "default",
-                title: `Welcome, ${result.user.username}!`,
-                description: "You have successfully logged in.",
-            });
-            router.push(result.user.role === "admin" ? "/farm/dashboard" : "/farm/activity");
-        } catch (err) {
-            console.error("Error logging in:", err);
-            toast({
-                variant: "default",
-                title: "Unexpected Error",
-                description: "An unexpected error occurred. Please try again.",
-            });
-        } finally {
-            setLoading(false);
-        }
+    const scrollToFeatures = () => {
+        const element = document.getElementById("features");
+        element?.scrollIntoView({ behavior: "smooth" });
     };
 
     return (
-        <div className="flex flex-col justify-center items-center min-h-[90vh] p-4">
-            <Card className="shadow-none w-full max-w-sm p-4">
-                <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                        <FormField
-                            control={form.control}
-                            name="username"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Username</FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            placeholder="Enter your username"
-                                            {...field}
-                                            className="border rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
-                                        />
-                                    </FormControl>
-                                    <FormMessage className="text-red-500 mt-1" />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="password"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Password</FormLabel>
-                                    <FormControl>
-                                        <div className="relative">
-                                            <Input
-                                                type={showPassword ? "text" : "password"}
-                                                placeholder="Enter your password"
-                                                {...field}
-                                                className="border rounded-md p-2 w-full pr-10 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                                            />
-                                            <button
-                                                type="button"
-                                                className="absolute top-1/2 right-3 transform -translate-y-1/2"
-                                                onClick={() => setShowPassword(!showPassword)}
-                                            >
-                                                {showPassword ? (
-                                                    <EyeOff className="h-5 w-5 text-gray-600" />
-                                                ) : (
-                                                    <Eye className="h-5 w-5 text-gray-600" />
-                                                )}
-                                            </button>
-                                        </div>
-                                    </FormControl>
-                                    <FormMessage className="text-red-500 mt-1" />
-                                </FormItem>
-                            )}
-                        />
-                        <Button variant="default" type="submit" disabled={loading} className="w-full">
-                            {loading ? "Loading ..." : "Login"}
-                        </Button>
-                    </form>
-                </Form>
-            </Card>
+        <div className="min-h-screen bg-white">
+            {/* The sidebar trigger would appear here from layout.tsx */}
+            {/* We start our content below that */}
+
+            {/* Hero Section with Login Form */}
+            <section className="pt-20 mb-40 px-6">
+                <div className="max-w-6xl mx-auto items-center">
+                    {/* Content Section */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5 }}
+                        className="space-y-8"
+                    >
+                        <div className="space-y-4">
+                            <div className="flex items-center space-x-2 mb-8 md:mb-0">
+                                <img src="/logo.png" alt="EcoHarvest Logo" className="h-10" />
+                                <span className="text-xl font-bold text-primary">EcoHarvest</span>
+                            </div>
+                        </div>
+
+                        <p className="text-gray-600 text-lg max-w-2xl">
+                            Transform your agricultural operations with our cutting-edge platform.
+                            Monitor, analyze, and optimize every aspect of your farm to maximize
+                            yields and sustainability.
+                        </p>
+
+                        <p className="flex space-x-4">
+                            <Button
+                                onClick={handleLogin}
+                                variant={"default"}
+                            >
+                                Get Started
+                                <LogInIcon size={20} className="ml-2" />
+                            </Button>
+                            <Button
+                                onClick={scrollToFeatures}
+                                variant="outline"
+                            >
+                                Help
+                                <HelpCircleIcon size={20} />
+                            </Button>
+                        </p>
+                    </motion.div>
+
+
+                </div>
+            </section>
+
+            {/* Features Section with Screenshots */}
+            <section id="features" className=" px-6">
+                <div className="max-w-6xl mx-auto">
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        whileInView={{ opacity: 1 }}
+                        viewport={{ once: true }}
+                        className=" mb-40"
+                    >
+                        <h2 className="text-3xl font-bold  mb-4">Explore EcoHarvest Farm Management Features</h2>
+                        <p className="text-lg text-gray-600 max-w-2xl ">
+                            Our platform offers comprehensive tools to help you optimize your farming operations.
+                            Here's what you can expect when you log in:
+                        </p>
+                    </motion.div>
+
+                    {/* Feature 1 - Dashboard */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        className="mb-32"
+                    >
+                        <div className="grid md:grid-cols-2 gap-16 items-center">
+                            <div>
+                                <h4 className="font-semibold text-primary mb-6">
+                                    Comprehensive Dashboard
+                                </h4>
+                                <p className="text-gray-600 mb-6 text-lg">
+                                    Get a bird's-eye view of your entire farm operation with our customizable dashboard.
+                                    Monitor key metrics, view alerts, and access all your farming data in one place.
+                                </p>
+                                <ul className="space-y-4">
+                                    <li className="flex items-start">
+                                        <ArrowRight size={18} className="text-primary mr-3 mt-1 flex-shrink-0" />
+                                        <span>Real-time weather data and forecasts integrated directly into your view</span>
+                                    </li>
+                                    <li className="flex items-start">
+                                        <ArrowRight size={18} className="text-primary mr-3 mt-1 flex-shrink-0" />
+                                        <span>Customizable widgets for the metrics that matter most to your operation</span>
+                                    </li>
+                                    <li className="flex items-start">
+                                        <ArrowRight size={18} className="text-primary mr-3 mt-1 flex-shrink-0" />
+                                        <span>Status indicators for all your connected farm equipment and sensors</span>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div className="">
+                                <img
+                                    src="home-analytics.jpg"
+                                    alt="EcoHarvest Dashboard"
+                                    className="rounded-lg "
+                                />
+                            </div>
+                        </div>
+                    </motion.div>
+
+                    {/* Feature 1 - Dashboard */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        className="mb-32"
+                    >
+                        <div className="grid md:grid-cols-2 gap-16 items-center">
+                            <div>
+                                <h4 className="font-semibold text-primary mb-6">
+                                    Comprehensive Dashboard
+                                </h4>
+                                <p className="text-gray-600 mb-6 text-lg">
+                                    Get a bird's-eye view of your entire farm operation with our customizable dashboard.
+                                    Monitor key metrics, view alerts, and access all your farming data in one place.
+                                </p>
+                                <ul className="space-y-4">
+                                    <li className="flex items-start">
+                                        <ArrowRight size={18} className="text-primary mr-3 mt-1 flex-shrink-0" />
+                                        <span>Real-time weather data and forecasts integrated directly into your view</span>
+                                    </li>
+                                    <li className="flex items-start">
+                                        <ArrowRight size={18} className="text-primary mr-3 mt-1 flex-shrink-0" />
+                                        <span>Customizable widgets for the metrics that matter most to your operation</span>
+                                    </li>
+                                    <li className="flex items-start">
+                                        <ArrowRight size={18} className="text-primary mr-3 mt-1 flex-shrink-0" />
+                                        <span>Status indicators for all your connected farm equipment and sensors</span>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div className="">
+                                <img
+                                    src="home-analytics.jpg"
+                                    alt="EcoHarvest Dashboard"
+                                    className="rounded-lg "
+                                />
+                            </div>
+                        </div>
+                    </motion.div>
+
+                    {/* Feature 1 - Dashboard */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        className="mb-32"
+                    >
+                        <div className="grid md:grid-cols-2 gap-16 items-center">
+                            <div>
+                                <h4 className="font-semibold text-primary mb-6">
+                                    Comprehensive Dashboard
+                                </h4>
+                                <p className="text-gray-600 mb-6 text-lg">
+                                    Get a bird's-eye view of your entire farm operation with our customizable dashboard.
+                                    Monitor key metrics, view alerts, and access all your farming data in one place.
+                                </p>
+                                <ul className="space-y-4">
+                                    <li className="flex items-start">
+                                        <ArrowRight size={18} className="text-primary mr-3 mt-1 flex-shrink-0" />
+                                        <span>Real-time weather data and forecasts integrated directly into your view</span>
+                                    </li>
+                                    <li className="flex items-start">
+                                        <ArrowRight size={18} className="text-primary mr-3 mt-1 flex-shrink-0" />
+                                        <span>Customizable widgets for the metrics that matter most to your operation</span>
+                                    </li>
+                                    <li className="flex items-start">
+                                        <ArrowRight size={18} className="text-primary mr-3 mt-1 flex-shrink-0" />
+                                        <span>Status indicators for all your connected farm equipment and sensors</span>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div className="">
+                                <img
+                                    src="home-analytics.jpg"
+                                    alt="EcoHarvest Dashboard"
+                                    className="rounded-lg "
+                                />
+                            </div>
+                        </div>
+                    </motion.div>
+
+                    {/* Feature 1 - Dashboard */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        className="mb-32"
+                    >
+                        <div className="grid md:grid-cols-2 gap-16 items-center">
+                            <div>
+                                <h4 className="font-semibold text-primary mb-6">
+                                    Comprehensive Dashboard
+                                </h4>
+                                <p className="text-gray-600 mb-6 text-lg">
+                                    Get a bird's-eye view of your entire farm operation with our customizable dashboard.
+                                    Monitor key metrics, view alerts, and access all your farming data in one place.
+                                </p>
+                                <ul className="space-y-4">
+                                    <li className="flex items-start">
+                                        <ArrowRight size={18} className="text-primary mr-3 mt-1 flex-shrink-0" />
+                                        <span>Real-time weather data and forecasts integrated directly into your view</span>
+                                    </li>
+                                    <li className="flex items-start">
+                                        <ArrowRight size={18} className="text-primary mr-3 mt-1 flex-shrink-0" />
+                                        <span>Customizable widgets for the metrics that matter most to your operation</span>
+                                    </li>
+                                    <li className="flex items-start">
+                                        <ArrowRight size={18} className="text-primary mr-3 mt-1 flex-shrink-0" />
+                                        <span>Status indicators for all your connected farm equipment and sensors</span>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div className="">
+                                <img
+                                    src="home-analytics.jpg"
+                                    alt="EcoHarvest Dashboard"
+                                    className="rounded-lg "
+                                />
+                            </div>
+                        </div>
+                    </motion.div>
+
+
+                </div>
+            </section>
+
+
         </div>
     );
-};
-
-export default LoginPage;
+}

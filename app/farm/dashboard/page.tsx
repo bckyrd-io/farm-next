@@ -12,20 +12,6 @@ import {
     Legend,
     ResponsiveContainer,
 } from "recharts";
-import "datatables.net-dt/css/dataTables.dataTables.css"; // DataTables default CSS
-import "datatables.net-buttons-dt/css/buttons.dataTables.css"; // Buttons CSS >change to tailwind
-import "datatables.net-responsive-dt";
-import DataTable from 'datatables.net-react';
-import DT from 'datatables.net-dt';
-import 'datatables.net-buttons-dt';
-import 'datatables.net-buttons/js/buttons.html5';
-import jszip from 'jszip';
-import pdfmake from 'pdfmake';
-
-// Activate the DataTables module
-DataTable.use(DT);
-DT.Buttons.jszip(jszip);
-DT.Buttons.pdfMake(pdfmake);
 
 // TypeScript types for API response
 interface ActivityByType {
@@ -34,17 +20,9 @@ interface ActivityByType {
     activities: string[];
 }
 
-interface ActivityListItem {
-    activityId: number;
-    activityType: string;
-    description: string;
-    amount: number;
-    createdAt: string;
-}
 
 const Dashboard = () => {
     const [activitiesByType, setActivitiesByType] = useState<ActivityByType[]>([]);
-    const [activitiesList, setActivitiesList] = useState<ActivityListItem[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
 
     const chartData = activitiesByType.map((activity) => ({
@@ -63,7 +41,6 @@ const Dashboard = () => {
                 const result = await response.json();
 
                 setActivitiesByType(result.activitiesByType);
-                setActivitiesList(result.activitiesList);
             } catch (err) {
                 console.error("Error fetching data:", err);
             } finally {
@@ -94,24 +71,9 @@ const Dashboard = () => {
 
     const netProfit = calculateNetProfit();
 
-    // DataTable columns definition
-    const columns = [
-        { title: "ID", data: "activityId" },
-        { title: "Description", data: "description" },
-        { title: "Type", data: "activityType" },
-        { title: "Amount", data: "amount" },
-        { title: "Date", data: "createdAt" },
-    ];
-
-    // Format data for the DataTable
-    const data = activitiesList.map((activity) => ({
-        ...activity,
-        createdAt: new Date(activity.createdAt).toLocaleDateString(),
-    }));
-
     return (
         <div className="flex flex-col justify-center items-center min-h-[90vh] p-4">
-            <h1 className="text-2xl font-bold mb-6">Dashboard</h1>
+            <h1 className="text-2xl font-bold mb-6">Analytics</h1>
 
             {/* Metrics Section */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
@@ -153,22 +115,6 @@ const Dashboard = () => {
                 </Card>
             </div>
 
-            {/* Activities Overview using DataTable */}
-            <Card className="w-full mt-5 shadow-none p-4">
-                <DataTable
-                    data={data}
-                    columns={columns}
-                    options={{
-                        ordering: true,
-                        responsive: true,
-                        info: true,
-                        layout: {
-                            topStart: 'buttons',
-                        },
-                    }}
-                    className="display"
-                />
-            </Card>
         </div>
     );
 };

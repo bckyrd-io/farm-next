@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '../../../drizzle/db';
 import { usersTable } from '../../../drizzle/db/schema';
-// import bcrypt from 'bcrypt'; // For password hashing
+import bcrypt from 'bcryptjs'; // For password hashing
 
 // Handle POST requests to create a new user
 export async function POST(req: NextRequest) {
@@ -17,8 +17,7 @@ export async function POST(req: NextRequest) {
     const role: string = "Staff";
     try {
         // Hash the password before saving it
-        // const passwordHash = await bcrypt.hash(password, 10);
-        const passwordHash = password;
+        const passwordHash = await bcrypt.hash(password, 10);
 
         console.log("the problem is here 2");
         // Insert the new user into the database
