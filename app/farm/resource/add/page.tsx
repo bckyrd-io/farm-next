@@ -16,43 +16,78 @@ import { Input } from "../../../../components/ui/input";
 import { Button } from "../../../../components/ui/button";
 import { Card } from "../../../../components/ui/card";
 import { useToast } from "../../../../hooks/use-toast"; // Custom hook for toast notifications
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { CommandInput, CommandList, CommandEmpty, CommandGroup, CommandItem } from 'cmdk';
+import { ChevronsUpDown, Check } from 'lucide-react';
+import { Command } from '@/components/ui/command';
+
+// Define resource interface
+interface Resource {
+    id: string;
+    name: string;
+}
+
+interface Activity {
+    id: string;
+    description: string;
+}
 
 // Schema for form validation using Zod
 const resourceSchema = z.object({
-    name: z.string().min(1, { message: "Name is required." }),
+    inventory: z.string().min(1, { message: "Inventory name is required." }),
     quantity: z.preprocess((val) => parseFloat(val as string), z.number().min(0, { message: "Quantity must be a positive number." })).optional(),
     unit: z.string().optional(), // Unit is optional for Human resources
     resourceType: z.enum(["Human", "Inventory"], {
         errorMap: () => ({ message: "Select a valid resource type." }),
     }),
     activityId: z.string().optional(), // Activities are optional
+    allocatedQuantity: z.preprocess((val) => parseFloat(val as string), z.number().min(0)).optional(),
 });
 
 type ResourceFormValues = z.infer<typeof resourceSchema>;
 
 const AddResourcePage: React.FC = () => {
-    const [activities, setActivities] = useState<{ id: string; description: string }[]>([]);
+    const [activities, setActivities] = useState<Activity[]>([]);
     const { toast } = useToast(); // Custom hook for toast notifications
     const [loading, setLoading] = useState(false); // State for loading status
+    const [farmResources, setFarmResources] = useState<string[]>([]);
+    const [searchValue, setSearchValue] = useState("");
+    const [popoverOpen, setPopoverOpen] = useState(false);
 
     const form = useForm<ResourceFormValues>({
         resolver: zodResolver(resourceSchema),
         defaultValues: {
-            name: '',
+            inventory: '',
             quantity: 0,
             unit: '',
             resourceType: "Human", // Default set to "Human"
             activityId: '',
+            allocatedQuantity: 0,
         },
     });
 
-    // Fetch activities for the select dropdown
+    // Fetch resources and activities for the dropdowns
     useEffect(() => {
+        const fetchResources = async () => {
+            try {
+                const response = await fetch("/api/resources");
+                if (!response.ok) throw new Error("Failed to fetch resources");
+
+                const result = await response.json();
+                if (result.success && Array.isArray(result.resources)) {
+                    const names = result.resources.map((res: Resource) => res.name);
+                    setFarmResources(names);
+                }
+            } catch (error) {
+                console.error("Error fetching farm resources:", error);
+            }
+        };
+
         const fetchActivities = async () => {
             try {
                 const response = await fetch('/api/activities');
                 const data = await response.json();
-                if (Array.isArray(data.activities)) {
+                if (data.success && Array.isArray(data.activities)) {
                     setActivities(data.activities);
                 } else {
                     throw new Error("Failed to load activities.");
@@ -66,6 +101,8 @@ const AddResourcePage: React.FC = () => {
                 });
             }
         };
+
+        fetchResources();
         fetchActivities();
     }, [toast]);
 
@@ -78,7 +115,13 @@ const AddResourcePage: React.FC = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(data),
+                body: JSON.stringify({
+                    name: data.inventory, // Send inventory as name to the API
+                    quantity: data.quantity,
+                    unit: data.unit,
+                    activityId: data.activityId,
+                    allocatedQuantity: data.allocatedQuantity
+                }),
             });
 
             const result = await response.json();
@@ -87,7 +130,7 @@ const AddResourcePage: React.FC = () => {
                 toast({
                     variant: "default",
                     title: "Resource Added",
-                    description: `Resource "${data.name}" has been successfully added.`,
+                    description: `Resource "${data.inventory}" has been successfully added.`,
                 });
                 form.reset();
             } else {
@@ -105,28 +148,104 @@ const AddResourcePage: React.FC = () => {
         }
     };
 
+    // Handle input change in the command input
+    const handleCommandInputChange = (value: string) => {
+        setSearchValue(value);
+        form.setValue("inventory", value);
+    };
+
+    // Handle selection from command list
+    const handleCommandSelect = (value: string) => {
+        form.setValue("inventory", value);
+        setPopoverOpen(false);
+    };
+
     return (
         <div className="flex flex-col justify-center items-center min-h-[90vh] p-4">
-            <h1 className="text-2xl font-bold mb-6 text-center">New Request</h1>
+            <h1 className="text-2xl font-bold mb-6 text-center">New Resource</h1>
 
             <Card className="shadow-none w-full max-w-sm p-4">
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                        {/* Name Field */}
+
+                        {/* Inventory Field with Combobox */}
                         <FormField
                             control={form.control}
-                            name="name"
+                            name="inventory"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Name</FormLabel>
+                                    <FormLabel>Inventory Name</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="inventory name" {...field} />
+                                        <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
+                                            <PopoverTrigger asChild>
+                                                <button
+                                                    type="button"
+                                                    className="border rounded-md p-2 w-full text-left flex justify-between items-center focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                                >
+                                                    {field.value || "Select or type inventory name"}
+                                                    <ChevronsUpDown className="ml-2 h-4 w-4" />
+                                                </button>
+                                            </PopoverTrigger>
+                                            <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0 shadow-none">
+                                                <Command>
+                                                    <CommandInput
+                                                        placeholder="Search or add new inventory..."
+                                                        value={searchValue}
+                                                        onValueChange={handleCommandInputChange}
+                                                    />
+                                                    <CommandList>
+                                                        <CommandEmpty>
+                                                            No matching inventory found. 
+                                                            Press Enter to add "{searchValue}" as new inventory.
+                                                        </CommandEmpty>
+                                                        <CommandGroup>
+                                                            {farmResources
+                                                                .filter(name => name.toLowerCase().includes(searchValue.toLowerCase()))
+                                                                .map((resource, index) => (
+                                                                    <CommandItem
+                                                                        key={index}
+                                                                        value={resource}
+                                                                        onSelect={handleCommandSelect}
+                                                                    >
+                                                                        <Check
+                                                                            className={`h-4 mr-2 ${field.value === resource
+                                                                                ? "opacity-100"
+                                                                                : "opacity-0"
+                                                                                }`}
+                                                                        />
+                                                                        {resource}
+                                                                    </CommandItem>
+                                                                ))}
+                                                        </CommandGroup>
+                                                    </CommandList>
+                                                </Command>
+                                            </PopoverContent>
+                                        </Popover>
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
                             )}
                         />
 
+                        {/* Resource Type Field */}
+                        <FormField
+                            control={form.control}
+                            name="resourceType"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Resource Type</FormLabel>
+                                    <FormControl>
+                                        <select {...field} className="border rounded-md p-2 w-full">
+                                            <option value="Human">Human</option>
+                                            <option value="Inventory">Inventory</option>
+                                        </select>
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        {/* Quantity Field */}
                         <FormField
                             control={form.control}
                             name="quantity"
@@ -141,6 +260,7 @@ const AddResourcePage: React.FC = () => {
                             )}
                         />
 
+                        {/* Unit Field */}
                         <FormField
                             control={form.control}
                             name="unit"
@@ -155,6 +275,7 @@ const AddResourcePage: React.FC = () => {
                             )}
                         />
 
+                        {/* Associated Activity Field */}
                         <FormField
                             control={form.control}
                             name="activityId"
@@ -163,7 +284,7 @@ const AddResourcePage: React.FC = () => {
                                     <FormLabel>Associated Activity</FormLabel>
                                     <FormControl>
                                         <select {...field} className="border rounded-md p-2 w-full">
-                                            <option value="" disabled>Select activity</option>
+                                            <option value="">None</option>
                                             {activities.map((activity) => (
                                                 <option key={activity.id} value={activity.id}>
                                                     {activity.description}
@@ -176,11 +297,28 @@ const AddResourcePage: React.FC = () => {
                             )}
                         />
 
+                        {/* Allocated Quantity Field - only shown if activity is selected */}
+                        {form.watch("activityId") && (
+                            <FormField
+                                control={form.control}
+                                name="allocatedQuantity"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Allocated Number</FormLabel>
+                                        <FormControl>
+                                            <Input type="number" placeholder="0" {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        )}
+
                         {/* Submit Button with Loading State */}
                         <Button type="submit" disabled={loading} className="w-full">
-                            {loading ? "Submitting..." : "submit"}
+                            {loading ? "Submitting..." : "Submit"}
                         </Button>
-                        
+
                     </form>
                 </Form>
             </Card>

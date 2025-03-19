@@ -1,5 +1,5 @@
 import { db } from "../../../drizzle/db";
-import { performanceTable, activitiesTable, usersTable } from "../../../drizzle/db/schema";
+import { performanceTable, activitiesTable, usersTable, branchesTable } from "../../../drizzle/db/schema";
 import { eq, or, and, isNull } from "drizzle-orm";
 
 // Fetch all performances or specific user's performances
@@ -15,6 +15,7 @@ export async function GET(req: Request) {
                     id: performanceTable.id,
                     userId: performanceTable.userId,
                     username: usersTable.username,
+                    branch_name: branchesTable.name,
                     role: usersTable.role,
                     activity: activitiesTable.description,
                     status: performanceTable.status,
@@ -22,6 +23,7 @@ export async function GET(req: Request) {
                 })
                 .from(usersTable)
                 .leftJoin(performanceTable, eq(usersTable.id, performanceTable.userId))
+                .leftJoin(branchesTable, eq(usersTable.branchId, branchesTable.id))
                 .leftJoin(activitiesTable, eq(performanceTable.activityId, activitiesTable.id))
                 .where(
                     and(
@@ -40,6 +42,7 @@ export async function GET(req: Request) {
                     id: performanceTable.id,
                     userId: usersTable.id,
                     username: usersTable.username,
+                    branch_name: branchesTable.name,
                     role: usersTable.role,
                     activity: activitiesTable.description,
                     status: performanceTable.status,
@@ -47,6 +50,7 @@ export async function GET(req: Request) {
                 })
                 .from(usersTable)
                 .leftJoin(performanceTable, eq(usersTable.id, performanceTable.userId))
+                .leftJoin(branchesTable, eq(usersTable.branchId, branchesTable.id))
                 .leftJoin(activitiesTable, eq(performanceTable.activityId, activitiesTable.id))
                 .where(eq(usersTable.role, "Staff"));
 

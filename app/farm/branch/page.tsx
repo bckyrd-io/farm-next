@@ -40,7 +40,6 @@ const Branch = () => {
 
 	return (
         <div className="flex flex-col justify-center items-center min-h-[90vh] p-4">
-			<h1 className="text-2xl font-bold mb-3">Branches</h1>
 
 			<Button
 				className="mt-4"
@@ -48,7 +47,7 @@ const Branch = () => {
 					router.push("branch/add"); // Navigate to branch creation page
 				}}
 			>
-				Create Branch
+				New Branch
 			</Button>
 
 			<div className="grid grid-cols-1 gap-4 w-full mt-4">

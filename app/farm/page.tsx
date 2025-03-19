@@ -18,7 +18,8 @@ import { Input } from "../../components/ui/input";
 import { Button } from "../../components/ui/button";
 import { Card } from "../../components/ui/card";
 import { useToast } from "../../hooks/use-toast";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, ArrowLeft } from "lucide-react";
+import Link from "next/link";
 
 const loginSchema = z.object({
     username: z.string().min(1, { message: "Username is required." }),
@@ -129,6 +130,12 @@ const LoginPage = () => {
                         <Button variant="default" type="submit" disabled={loading} className="w-full">
                             {loading ? "Loading ..." : "Login"}
                         </Button>
+                        <div className="flex justify-left ">
+                            <Link href="/" className="flex  text-sm text-gray-600 hover:text-gray-900 transition-colors">
+                                <ArrowLeft className="h-5 w-4 mr-1" />
+                                Back to Home
+                            </Link>
+                        </div>
                     </form>
                 </Form>
             </Card>

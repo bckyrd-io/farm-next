@@ -15,14 +15,6 @@ import {
 import { Input } from "../../../components/ui/input";
 import { Button } from "../../../components/ui/button";
 import { Card } from "../../../components/ui/card";
-// import {
-//     AlertDialog,
-//     AlertDialogAction,
-//     AlertDialogContent,
-//     AlertDialogFooter,
-//     AlertDialogHeader,
-//     AlertDialogTitle,
-// } from "@/components/ui/alert-dialog";
 import { Popover, PopoverTrigger, PopoverContent } from "../../../components/ui/popover";
 import {
     Command,
@@ -57,10 +49,6 @@ const activitySchema = z.object({
 
 type ActivityFormValues = z.infer<typeof activitySchema>;
 
-// interface Notification {
-//     notificationMessage: string;
-// }
-
 interface Activity {
     id: number;
     description: string;
@@ -69,8 +57,6 @@ interface Activity {
 const AddActivity = () => {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
-    // const [notifications, setNotifications] = useState<Notification[]>([]);
-    // const [showDialog, setShowDialog] = useState(false);
     const [farmActivities, setFarmActivities] = useState<string[]>([]);
 
     const form = useForm<ActivityFormValues>({
@@ -82,24 +68,6 @@ const AddActivity = () => {
             activityDate: "",
         },
     });
-
-    // // Fetch notifications
-    // useEffect(() => {
-    //     const fetchNotifications = async () => {
-    //         try {
-    //             const response = await fetch("/api/dashboard");
-    //             if (!response.ok) throw new Error("Failed to fetch notifications");
-
-    //             const result = await response.json();
-    //             setNotifications(result.notifications || []);
-    //             setShowDialog(result.notifications.length > 0);
-    //         } catch (error) {
-    //             console.error("Error fetching notifications:", error);
-    //         }
-    //     };
-
-    //     fetchNotifications();
-    // }, []);
 
     // Fetch farm activities from API
     useEffect(() => {
@@ -152,8 +120,7 @@ const AddActivity = () => {
             setLoading(false);
         }
     };
-
-    // const handleDialogClose = () => setShowDialog(false);
+    
 
     return (
         <div className="flex flex-col justify-center items-center min-h-[90vh] p-4">

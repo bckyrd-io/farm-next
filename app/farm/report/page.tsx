@@ -180,7 +180,7 @@ const Report = () => {
             ],
             body: tableData,
             startY: 30,
-            headStyles: { fillColor: [146, 56, 46] },
+            headStyles: { fillColor: [51, 183, 109] },
         });
 
         doc.save(

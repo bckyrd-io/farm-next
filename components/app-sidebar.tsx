@@ -1,6 +1,6 @@
 "use client";
 import useUserStore from '../app/store/zustand'; // Import your Zustand store
-import { Calendar, Home, Settings, Users, Edit, FolderCheck, PieChart, ChartLineIcon, ChevronsUpDown } from 'lucide-react';
+import { Calendar, Home, Settings, Users, Edit, FolderCheck, PieChart, TableIcon } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation'; // Import necessary hooks
 import {
     Sidebar,
@@ -14,7 +14,7 @@ import {
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import Image from 'next/image'; // Import the Image component from Next.js
+import Image from 'next/image'; 
 
 const items = [
     {
@@ -26,7 +26,7 @@ const items = [
     {
         title: 'Reports',
         url: 'farm/report',
-        icon: ChartLineIcon,
+        icon: TableIcon,
         roles: ['admin'],
     },
     {
@@ -88,11 +88,10 @@ export function AppSidebar() {
     return (
         <Sidebar>
            <SidebarHeader>
-                {/* Updated Header with proper styling */}
-                <SidebarMenu>
+                <SidebarMenu className="pb-4 border-b border-gray-200">
                     <SidebarMenuItem>
                         <div className="flex items-center gap-x-2 ">
-                            <div className="flex items-center justify-center bg-sidebar-primary text-sidebar-primary-foreground border-b border-gray-200">
+                            <div className="flex items-center justify-center ">
                                 <Image
                                     src="/logo.png" // Your logo path
                                     alt="Logo"
@@ -128,7 +127,7 @@ export function AppSidebar() {
                 </SidebarMenu>
             </SidebarContent>
             <SidebarFooter>
-                <div className="flex items-center justify-between p-4 border-t border-gray-200">
+                <div className="flex items-center justify-between pt-4 border-t border-gray-200">
                     <div className="flex items-center space-x-2">
                         <Avatar>
                             <AvatarImage src={avatarUrl} alt={user.username} />

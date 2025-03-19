@@ -12,6 +12,7 @@ interface PerformanceData {
     id: number;
     userId: number;
     username: string;
+    branch_name: string;
     activity: string;
     status: string;
     updatedAt: string;
@@ -80,6 +81,7 @@ const StaffPage = () => {
                         <TableRow>
                             <TableHead>ID</TableHead>
                             <TableHead>Staff</TableHead>
+                            <TableHead>Branch</TableHead>
                             <TableHead>Activity</TableHead>
                             <TableHead>Status</TableHead>
                             <TableHead>Last Updated</TableHead>
@@ -91,6 +93,7 @@ const StaffPage = () => {
                             <TableRow key={item.id}>
                                 <TableCell>{item.id}</TableCell>
                                 <TableCell>{item.username}</TableCell>
+                                <TableCell>{item.branch_name}</TableCell>
                                 <TableCell>{item.activity}</TableCell>
                                 <TableCell>
                                     <Badge variant="default">{item.status}</Badge>
