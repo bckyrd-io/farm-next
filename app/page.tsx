@@ -113,7 +113,7 @@ export default function LandingPage() {
                                             </p>
                                             <div className="border rounded-lg overflow-hidden">
                                                 <img 
-                                                    src="/api/placeholder/800/400" 
+                                                    src="/user-management.jpg" 
                                                     alt="User Management" 
                                                     className="w-full h-auto"
                                                 />
@@ -131,7 +131,7 @@ export default function LandingPage() {
                                             </p>
                                             <div className="border rounded-lg overflow-hidden">
                                                 <img 
-                                                    src="/api/placeholder/800/400" 
+                                                    src="home-analytics.jpg" 
                                                     alt="Financial Analytics" 
                                                     className="w-full h-auto"
                                                 />
@@ -149,7 +149,7 @@ export default function LandingPage() {
                                             </p>
                                             <div className="border rounded-lg overflow-hidden">
                                                 <img 
-                                                    src="/api/placeholder/800/400" 
+                                                    src="/schedule-calendar.jpg" 
                                                     alt="Schedule Management" 
                                                     className="w-full h-auto"
                                                 />
@@ -159,33 +159,15 @@ export default function LandingPage() {
                                             </div>
                                         </div>
                                         
-                                        {/* Admin Feature 4: Inventory Management */}
-                                        <div className="space-y-4">
-                                            <h5 className="text-lg font-medium text-primary">Inventory Control</h5>
-                                            <p className="text-gray-600">
-                                                Approve inventory requests, track stock levels, and order new supplies. Manage equipment allocation.
-                                            </p>
-                                            <div className="border rounded-lg overflow-hidden">
-                                                <img 
-                                                    src="/api/placeholder/800/400" 
-                                                    alt="Inventory Control" 
-                                                    className="w-full h-auto"
-                                                />
-                                                <div className="p-3 bg-gray-50">
-                                                    <p className="text-sm text-gray-500">Inventory dashboard showing stock levels, pending requests, and order history</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        
                                         {/* Admin Feature 5: Performance Tracking */}
                                         <div className="space-y-4">
-                                            <h5 className="text-lg font-medium text-primary">Staff Performance Dashboard</h5>
+                                            <h5 className="text-lg font-medium text-primary">Staff Performance</h5>
                                             <p className="text-gray-600">
                                                 Monitor productivity metrics and generate performance reports for individual staff members.
                                             </p>
                                             <div className="border rounded-lg overflow-hidden">
                                                 <img 
-                                                    src="/api/placeholder/800/400" 
+                                                    src="/staff-performance.jpg" 
                                                     alt="Performance Dashboard" 
                                                     className="w-full h-auto"
                                                 />
@@ -197,13 +179,13 @@ export default function LandingPage() {
                                         
                                         {/* Admin Feature 6: Reporting */}
                                         <div className="space-y-4">
-                                            <h5 className="text-lg font-medium text-primary">Advanced Reporting</h5>
+                                            <h5 className="text-lg font-medium text-primary">Generate Report</h5>
                                             <p className="text-gray-600">
                                                 Generate comprehensive reports on farm operations, finances, and staff performance with export options.
                                             </p>
                                             <div className="border rounded-lg overflow-hidden">
                                                 <img 
-                                                    src="/api/placeholder/800/400" 
+                                                    src="/generate-report.jpg" 
                                                     alt="Advanced Reporting" 
                                                     className="w-full h-auto"
                                                 />
@@ -212,24 +194,7 @@ export default function LandingPage() {
                                                 </div>
                                             </div>
                                         </div>
-                                        
-                                        {/* Admin Feature 7: System Settings */}
-                                        <div className="space-y-4">
-                                            <h5 className="text-lg font-medium text-primary">System Configuration</h5>
-                                            <p className="text-gray-600">
-                                                Manage system-wide settings, customize modules, and configure notification preferences.
-                                            </p>
-                                            <div className="border rounded-lg overflow-hidden">
-                                                <img 
-                                                    src="/api/placeholder/800/400" 
-                                                    alt="System Configuration" 
-                                                    className="w-full h-auto"
-                                                />
-                                                <div className="p-3 bg-gray-50">
-                                                    <p className="text-sm text-gray-500">System settings panel with configuration options for different modules</p>
-                                                </div>
-                                            </div>
-                                        </div>
+                            
                                     </div>
                                 </div>
                                 
@@ -249,30 +214,12 @@ export default function LandingPage() {
                                             </p>
                                             <div className="border rounded-lg overflow-hidden">
                                                 <img 
-                                                    src="/api/placeholder/800/400" 
+                                                    src="/create-activity.jpg" 
                                                     alt="Activity Logging" 
                                                     className="w-full h-auto"
                                                 />
                                                 <div className="p-3 bg-gray-50">
                                                     <p className="text-sm text-gray-500">Activity logging form with fields for recording task details and outcomes</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        
-                                        {/* Staff Feature 2: Schedule Viewing */}
-                                        <div className="space-y-4">
-                                            <h5 className="text-lg font-medium text-primary">Schedule Viewer</h5>
-                                            <p className="text-gray-600">
-                                                Access personal work schedules and upcoming assignments through an intuitive calendar interface.
-                                            </p>
-                                            <div className="border rounded-lg overflow-hidden">
-                                                <img 
-                                                    src="/api/placeholder/800/400" 
-                                                    alt="Schedule Viewer" 
-                                                    className="w-full h-auto"
-                                                />
-                                                <div className="p-3 bg-gray-50">
-                                                    <p className="text-sm text-gray-500">Staff calendar view showing assigned tasks and upcoming activities</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -285,7 +232,7 @@ export default function LandingPage() {
                                             </p>
                                             <div className="border rounded-lg overflow-hidden">
                                                 <img 
-                                                    src="/api/placeholder/800/400" 
+                                                    src="/request-inventory.jpg" 
                                                     alt="Resource Requests" 
                                                     className="w-full h-auto"
                                                 />
@@ -295,23 +242,7 @@ export default function LandingPage() {
                                             </div>
                                         </div>
                                         
-                                        {/* Staff Feature 4: Personal Dashboard */}
-                                        <div className="space-y-4">
-                                            <h5 className="text-lg font-medium text-primary">Personal Dashboard</h5>
-                                            <p className="text-gray-600">
-                                                View personal performance metrics, activity history, and upcoming tasks in one centralized location.
-                                            </p>
-                                            <div className="border rounded-lg overflow-hidden">
-                                                <img 
-                                                    src="/api/placeholder/800/400" 
-                                                    alt="Personal Dashboard" 
-                                                    className="w-full h-auto"
-                                                />
-                                                <div className="p-3 bg-gray-50">
-                                                    <p className="text-sm text-gray-500">Staff dashboard showing personal metrics and recent activities</p>
-                                                </div>
-                                            </div>
-                                        </div>
+                                     
                                         
                                         {/* Staff Feature 5: Notifications */}
                                         <div className="space-y-4">
@@ -321,7 +252,7 @@ export default function LandingPage() {
                                             </p>
                                             <div className="border rounded-lg overflow-hidden">
                                                 <img 
-                                                    src="/api/placeholder/800/400" 
+                                                    src="/notification-schedule.jpg" 
                                                     alt="Notification Center" 
                                                     className="w-full h-auto"
                                                 />
@@ -337,7 +268,7 @@ export default function LandingPage() {
 
                         {/* Installation Section */}
                         <div className="space-y-8">
-                            <h3 className="text-2xl font-semibold">2. Installation</h3>
+                            <h3 className="text-2xl font-semibold" id="features">2. Installation</h3>
                             
                             <ol className="space-y-6">
                                 <li className="space-y-2">
