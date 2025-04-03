@@ -24,12 +24,6 @@ const items = [
         roles: ['admin'],
     },
     {
-        title: 'Reports',
-        url: 'farm/report',
-        icon: TableIcon,
-        roles: ['admin'],
-    },
-    {
         title: 'Branch',
         url: 'farm/branch',
         icon: Settings,
@@ -63,6 +57,12 @@ const items = [
         title: 'Users',
         url: 'farm/user',
         icon: Users,
+        roles: ['admin'],
+    },
+    {
+        title: 'Reports',
+        url: 'farm/report',
+        icon: TableIcon,
         roles: ['admin'],
     },
 ];

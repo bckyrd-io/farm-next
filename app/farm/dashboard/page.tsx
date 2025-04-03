@@ -94,7 +94,7 @@ const Dashboard = () => {
             {/* Bar Chart Section */}
             <div className="mt-10 w-full">
                 <Card className="p-4 shadow-none">
-                    <h2 className="text-lg font-semibold mb-4">Performance Overview</h2>
+                    <h2 className="text-lg font-semibold mb-4">Metrics Overview</h2>
                     <div className="w-full">
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart
