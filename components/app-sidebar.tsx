@@ -14,7 +14,7 @@ import {
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import Image from 'next/image'; 
+import Image from 'next/image';
 
 const items = [
     {
@@ -87,7 +87,7 @@ export function AppSidebar() {
 
     return (
         <Sidebar>
-           <SidebarHeader>
+            <SidebarHeader>
                 <SidebarMenu className="pb-4 border-b border-gray-200">
                     <SidebarMenuItem>
                         <div className="flex items-center gap-x-2 ">
@@ -101,9 +101,9 @@ export function AppSidebar() {
                                 />
                             </div>
                             <div className="grid flex-1 text-left text-sm leading-tight">
-                                <span className="truncate font-semibold">Eco Harvest</span>
+                                <span className="truncate font-semibold">Ground</span>
                                 <span className="truncate text-xs text-muted-foreground">
-                                    Farm Management System
+                                    Farm Dashboard
                                 </span>
                             </div>
                         </div>
